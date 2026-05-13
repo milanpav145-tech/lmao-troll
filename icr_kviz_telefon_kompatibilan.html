@@ -1,0 +1,2751 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>ICR kviz - telefon kompatibilna verzija</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;width:100%;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:#101827;color:#f4f7fb}
+body{font-size:18px;line-height:1.4}
+.container{width:100%;max-width:720px;margin:0 auto;padding:14px 12px 28px}
+h1{font-size:28px;line-height:1.15;margin:10px 0 8px}
+p{margin:0 0 10px;color:#cbd5e1}
+.stats{display:block;margin:8px 0 12px}
+.pill{display:inline-block;margin:3px 4px 3px 0;padding:7px 10px;border-radius:20px;background:#263449;color:#e8f2ff;font-size:14px}
+.card{background:#172033;border:1px solid #314158;border-radius:16px;padding:14px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.top{margin-bottom:12px}.meta{font-size:14px;color:#aebdd0;margin-bottom:3px}.section{font-size:14px;color:#93c5fd;margin-bottom:10px}
+select,button{width:100%;min-height:48px;border-radius:12px;border:0;padding:12px;margin:6px 0;font-size:17px;font-weight:bold}
+select{background:#233047;color:#fff;border:1px solid #3b4d68}button{background:#e5e7eb;color:#111827}button.primary{background:#38bdf8;color:#082f49}button.hint{background:#fde68a;color:#713f12}button.next{background:#334155;color:#fff;border:1px solid #53657d}
+.progress{height:10px;background:#263449;border-radius:10px;overflow:hidden;margin:12px 0 16px}.bar{height:10px;background:#38bdf8;width:0%}
+.question{font-size:23px;line-height:1.32;margin:0 0 16px;font-weight:bold;word-wrap:break-word}.options{margin-bottom:12px}
+.option{display:block;width:100%;padding:13px 12px;margin:10px 0;border:1px solid #3b4d68;border-radius:14px;background:#202b40;color:#fff;font-size:18px;line-height:1.35;word-wrap:break-word}.option input{margin-right:9px;transform:scale(1.25)}.option.correct{border-color:#22c55e;background:#17412d}.option.wrong{border-color:#ef4444;background:#4a1d25}
+.actions{display:block;margin-top:10px}.feedback,.hintbox{display:none;margin-top:12px;padding:12px;border-radius:12px;font-size:17px}.feedback.ok{display:block;background:#143d2a;border:1px solid #22c55e}.feedback.bad{display:block;background:#481d24;border:1px solid #ef4444}.hintbox{background:#443314;border:1px solid #f59e0b;color:#fff3c4}.review{display:none;margin-top:16px}.reviewItem{border-top:1px solid #3b4d68;padding:12px 0;font-size:16px}
+@media (min-width:600px){.actions{display:flex;gap:8px}.actions button{width:33.33%}.toprow{display:flex;gap:8px;align-items:center}.toprow select{flex:1}.toprow button{width:auto;min-width:170px}}
+</style>
+</head>
+<body>
+<div class="container"><h1>ICR kviz - verzija za telefon</h1><p>Kompatibilna verzija za mobilne browsere. Pitanja i odgovori se mešaju pri svakom pokretanju.</p><div class="stats"><span class="pill" id="totalPill"></span><span class="pill" id="scorePill">Tačno: 0</span><span class="pill" id="modePill">Mod: sva pitanja</span></div><div class="card"><div class="top"><div class="meta" id="qmeta"></div><div class="section" id="section"></div><div class="toprow"><select id="topic"><option value="all">Sve oblasti</option></select><button id="restart">Promešaj ponovo</button></div></div><div class="progress"><div class="bar" id="bar"></div></div><div class="question" id="question"></div><div class="options" id="options"></div><div class="actions"><button class="primary" id="check">Proveri</button><button class="hint" id="hintBtn">Hint</button><button class="next" id="next">Sledeće</button></div><div class="feedback" id="feedback"></div><div class="hintbox" id="hintBox"></div><div class="review" id="review"><h2>Rezultat</h2><p id="final"></p><button class="primary" id="again">Pokreni ponovo</button><div id="reviewList"></div></div></div></div>
+<script>
+var QUESTIONS = [
+  {
+    "section": "Čovek / čula",
+    "question": "Koja četiri kanala ulaza/izlaza informacija se navode kod čoveka u ICR?",
+    "options": [
+      "Vizuelni, auditorni, haptički i pokret",
+      "Samo vizuelni i tekstualni",
+      "Memorijski, logički, fizički i mrežni",
+      "Ulazni, izlazni, sistemski i korisnički"
+    ],
+    "answer": 0,
+    "hint": "Vizuelni, auditorni, haptički i pokret"
+  },
+  {
+    "section": "Vizija",
+    "question": "Koja su dva osnovna koraka vida?",
+    "options": [
+      "Fizički prijem stimulansa i procesiranje/interpretacija",
+      "Slušanje i prepoznavanje govora",
+      "Pamćenje i zaboravljanje",
+      "Fokus i klik"
+    ],
+    "answer": 0,
+    "hint": "Fizički prijem stimulansa i procesiranje/interpretacija"
+  },
+  {
+    "section": "Vizija",
+    "question": "Gde se fokusira izvrnuta slika u oku?",
+    "options": [
+      "Na mrežnjači",
+      "Na rožnjači",
+      "U srednjem uhu",
+      "U dugoročnoj memoriji"
+    ],
+    "answer": 0,
+    "hint": "Na mrežnjači"
+  },
+  {
+    "section": "Vizija",
+    "question": "Šta ganglioni pomažu da se detektuje?",
+    "options": [
+      "Obrazac i pokret",
+      "Samo boja",
+      "Samo glasnost",
+      "Samo bol"
+    ],
+    "answer": 0,
+    "hint": "Obrazac i pokret"
+  },
+  {
+    "section": "Vizija",
+    "question": "Šta određuje koliki deo scene zauzima objekat?",
+    "options": [
+      "Ugao gledanja",
+      "Broj tastera",
+      "Vreme obuke",
+      "Dubina boje monitora"
+    ],
+    "answer": 0,
+    "hint": "Ugao gledanja"
+  },
+  {
+    "section": "Vizija",
+    "question": "Zašto poznate objekte često doživljavamo iste veličine iako su na različitim rastojanjima?",
+    "options": [
+      "Zbog perceptivne konstantnosti veličine",
+      "Zbog ehoičke memorije",
+      "Zbog T9 algoritma",
+      "Zbog Fitovog zakona"
+    ],
+    "answer": 0,
+    "hint": "Zbog perceptivne konstantnosti veličine"
+  },
+  {
+    "section": "Vizija",
+    "question": "Šta je osvetljenost u kontekstu percepcije?",
+    "options": [
+      "Subjektivna reakcija na nivo osvetljenja",
+      "Broj piksela na ekranu",
+      "Frekvencija zvuka",
+      "Kapacitet radne memorije"
+    ],
+    "answer": 0,
+    "hint": "Subjektivna reakcija na nivo osvetljenja"
+  },
+  {
+    "section": "Vizija",
+    "question": "Kako se menja oštrina vida sa porastom osvetljenosti?",
+    "options": [
+      "Raste",
+      "Opada",
+      "Nestaje",
+      "Ne može se menjati"
+    ],
+    "answer": 0,
+    "hint": "Raste"
+  },
+  {
+    "section": "Boja",
+    "question": "Koje tri karakteristike boje se navode?",
+    "options": [
+      "Nijansa, intenzitet i zasićenje",
+      "Glasnost, frekvencija i boja tona",
+      "DPI, rezolucija i odnos stranica",
+      "Pamćenje, učenje i greške"
+    ],
+    "answer": 0,
+    "hint": "Nijansa, intenzitet i zasićenje"
+  },
+  {
+    "section": "Boja",
+    "question": "Na koju boju je ljudski vid najmanje osetljiv?",
+    "options": [
+      "Plavu",
+      "Crvenu",
+      "Zelenu",
+      "Belu"
+    ],
+    "answer": 0,
+    "hint": "Plavu"
+  },
+  {
+    "section": "Boja",
+    "question": "Zašto boju ne treba koristiti kao jedini nosilac važne informacije?",
+    "options": [
+      "Zbog daltonizma i različite percepcije boja",
+      "Zato što boje zauzimaju memoriju",
+      "Zato što LCD ne prikazuje boje",
+      "Zato što boja usporava miš"
+    ],
+    "answer": 0,
+    "hint": "Zbog daltonizma i različite percepcije boja"
+  },
+  {
+    "section": "Čitanje",
+    "question": "Kada se dešava percepcija tokom čitanja?",
+    "options": [
+      "Tokom fiksacije oka",
+      "Tokom pomeranja miša",
+      "Samo pri zatvaranju oka",
+      "Tokom zaboravljanja"
+    ],
+    "answer": 0,
+    "hint": "Tokom fiksacije oka"
+  },
+  {
+    "section": "Čitanje",
+    "question": "Šta pomaže čitanje sa ekrana prema skripti?",
+    "options": [
+      "Negativni kontrast",
+      "Samo plava slova",
+      "Sakrivanje teksta",
+      "Nasumičan raspored slova"
+    ],
+    "answer": 0,
+    "hint": "Negativni kontrast"
+  },
+  {
+    "section": "Slušanje",
+    "question": "Koji delovi čine fizički deo slušnog aparata?",
+    "options": [
+      "Spoljašnje, srednje i unutrašnje uho",
+      "Mrežnjača, ganglioni i zenica",
+      "RAM, CPU i disk",
+      "Miš, tastatura i ekran"
+    ],
+    "answer": 0,
+    "hint": "Spoljašnje, srednje i unutrašnje uho"
+  },
+  {
+    "section": "Slušanje",
+    "question": "Šta predstavlja visina tona?",
+    "options": [
+      "Frekvenciju",
+      "Amplitudu",
+      "Boju ekrana",
+      "DPI"
+    ],
+    "answer": 0,
+    "hint": "Frekvenciju"
+  },
+  {
+    "section": "Slušanje",
+    "question": "Šta predstavlja glasnost zvuka?",
+    "options": [
+      "Amplitudu",
+      "Frekvenciju",
+      "Zasićenje",
+      "Dubinu"
+    ],
+    "answer": 0,
+    "hint": "Amplitudu"
+  },
+  {
+    "section": "Slušanje",
+    "question": "Koji opseg frekvencija ljudsko uho približno registruje prema skripti?",
+    "options": [
+      "20 Hz do 15 kHz",
+      "1 Hz do 1 kHz",
+      "200 Hz do 200 kHz",
+      "15 kHz do 20 MHz"
+    ],
+    "answer": 0,
+    "hint": "20 Hz do 15 kHz"
+  },
+  {
+    "section": "Slušanje",
+    "question": "Šta ilustruje fenomen žurke?",
+    "options": [
+      "Sposobnost izdvajanja zvuka iz pozadinske buke",
+      "Nemogućnost slušanja govora",
+      "Rad senzorske memorije isključivo kod vida",
+      "Prednost batch obrade"
+    ],
+    "answer": 0,
+    "hint": "Sposobnost izdvajanja zvuka iz pozadinske buke"
+  },
+  {
+    "section": "Dodir",
+    "question": "Koji receptori registruju toplo i hladno?",
+    "options": [
+      "Termoreceptori",
+      "Nociceptori",
+      "Mehanoreceptori",
+      "Ganglioni"
+    ],
+    "answer": 0,
+    "hint": "Termoreceptori"
+  },
+  {
+    "section": "Dodir",
+    "question": "Koji receptori registruju bol?",
+    "options": [
+      "Nociceptori",
+      "Termoreceptori",
+      "Mehanoreceptori",
+      "Fotoreceptori"
+    ],
+    "answer": 0,
+    "hint": "Nociceptori"
+  },
+  {
+    "section": "Dodir",
+    "question": "Koji receptori registruju pritisak?",
+    "options": [
+      "Mehanoreceptori",
+      "Nociceptori",
+      "Termoreceptori",
+      "Eho receptori"
+    ],
+    "answer": 0,
+    "hint": "Mehanoreceptori"
+  },
+  {
+    "section": "Pokret",
+    "question": "Od čega se sastoji vreme potrebno za reakciju na stimulans?",
+    "options": [
+      "Vreme reakcije + vreme pokreta",
+      "Samo vreme pokreta",
+      "Samo vreme obuke",
+      "Vreme štampe + vreme skeniranja"
+    ],
+    "answer": 0,
+    "hint": "Vreme reakcije + vreme pokreta"
+  },
+  {
+    "section": "Pokret",
+    "question": "Koji stimulans ima približno najbrže vreme reakcije u skripti?",
+    "options": [
+      "Auditorni, oko 150 ms",
+      "Vizuelni, oko 700 ms",
+      "Bol, oko 150 ms",
+      "Haptički, oko 20 ms"
+    ],
+    "answer": 0,
+    "hint": "Auditorni, oko 150 ms"
+  },
+  {
+    "section": "Pokret",
+    "question": "Koliko je približno vreme reakcije na vizuelni stimulans?",
+    "options": [
+      "200 ms",
+      "70 ms",
+      "700 ms",
+      "10 s"
+    ],
+    "answer": 0,
+    "hint": "200 ms"
+  },
+  {
+    "section": "Pokret",
+    "question": "Šta opisuje Fitov zakon?",
+    "options": [
+      "Vreme potrebno da se pogodi meta na ekranu",
+      "Kapacitet dugoročne memorije",
+      "Kvalitet zvuka",
+      "Brzinu štampača"
+    ],
+    "answer": 0,
+    "hint": "Vreme potrebno da se pogodi meta na ekranu"
+  },
+  {
+    "section": "Pokret",
+    "question": "Prema Fitovom zakonu, kada je meta brže pogođena?",
+    "options": [
+      "Kada je veća i bliža",
+      "Kada je manja i dalja",
+      "Kada je plava",
+      "Kada nema povratne informacije"
+    ],
+    "answer": 0,
+    "hint": "Kada je veća i bliža"
+  },
+  {
+    "section": "Memorija",
+    "question": "Koja su tri tipa memorije u skripti?",
+    "options": [
+      "Senzorska, kratkoročna/radna i dugoročna",
+      "Vizuelna, tekstualna i sistemska",
+      "QWERTY, Dvorak i T9",
+      "Formativna, sumarna i heuristička"
+    ],
+    "answer": 0,
+    "hint": "Senzorska, kratkoročna/radna i dugoročna"
+  },
+  {
+    "section": "Memorija",
+    "question": "Šta je ikonička memorija?",
+    "options": [
+      "Senzorska memorija za vizuelni stimulans",
+      "Dugoročno skladište znanja",
+      "Memorija za bol",
+      "Memorija tastature"
+    ],
+    "answer": 0,
+    "hint": "Senzorska memorija za vizuelni stimulans"
+  },
+  {
+    "section": "Memorija",
+    "question": "Šta je ehoička memorija?",
+    "options": [
+      "Senzorska memorija za audio stimulans",
+      "Memorija za dodirni stimulans",
+      "Semantička mreža",
+      "Kapacitet ekrana"
+    ],
+    "answer": 0,
+    "hint": "Senzorska memorija za audio stimulans"
+  },
+  {
+    "section": "Memorija",
+    "question": "Šta je haptička memorija?",
+    "options": [
+      "Senzorska memorija za dodirni stimulans",
+      "Memorija za zvuk",
+      "Format datuma",
+      "Tip tastature"
+    ],
+    "answer": 0,
+    "hint": "Senzorska memorija za dodirni stimulans"
+  },
+  {
+    "section": "Kratkoročna memorija",
+    "question": "Koliki je tipičan kapacitet kratkoročne/radne memorije?",
+    "options": [
+      "7 ± 2 paketa informacija",
+      "Neograničen",
+      "1 paket",
+      "600 dpi"
+    ],
+    "answer": 0,
+    "hint": "7 ± 2 paketa informacija"
+  },
+  {
+    "section": "Kratkoročna memorija",
+    "question": "Šta je karakteristično za kratkoročnu memoriju?",
+    "options": [
+      "Brzi pristup, brzo zaboravljanje i ograničen kapacitet",
+      "Spor pristup i neograničen kapacitet",
+      "Samo epizodni događaji",
+      "Samo grafički podaci"
+    ],
+    "answer": 0,
+    "hint": "Brzi pristup, brzo zaboravljanje i ograničen kapacitet"
+  },
+  {
+    "section": "Dugoročna memorija",
+    "question": "Koja su dva tipa dugoročne memorije?",
+    "options": [
+      "Epizodna i semantička",
+      "Ikonička i ehoička",
+      "QWERTY i Dvorak",
+      "Formativna i sumarna"
+    ],
+    "answer": 0,
+    "hint": "Epizodna i semantička"
+  },
+  {
+    "section": "Dugoročna memorija",
+    "question": "Šta opisuje epizodna memorija?",
+    "options": [
+      "Niz događaja",
+      "Struktuirane činjenice i koncepte",
+      "Samo zvučne talase",
+      "Raspored tastera"
+    ],
+    "answer": 0,
+    "hint": "Niz događaja"
+  },
+  {
+    "section": "Dugoročna memorija",
+    "question": "Šta opisuje semantička memorija?",
+    "options": [
+      "Struktuirane činjenice, koncepte i veštine",
+      "Samo lične događaje",
+      "Samo trenutno osvetljenje",
+      "Samo greške u unosu"
+    ],
+    "answer": 0,
+    "hint": "Struktuirane činjenice, koncepte i veštine"
+  },
+  {
+    "section": "Semantička struktura",
+    "question": "Šta omogućava semantička mreža?",
+    "options": [
+      "Eksplicitne veze i nasleđivanje svojstava",
+      "Brže kliktanje mišem",
+      "Bolju rezoluciju ekrana",
+      "Automatsko štampanje"
+    ],
+    "answer": 0,
+    "hint": "Eksplicitne veze i nasleđivanje svojstava"
+  },
+  {
+    "section": "Predstavljanje znanja",
+    "question": "Šta je okvir (frame)?",
+    "options": [
+      "Struktura podataka sa slotovima popunjenim vrednostima",
+      "Formula za vreme pokreta",
+      "Vrsta CRT ekrana",
+      "Tip greške u testiranju"
+    ],
+    "answer": 0,
+    "hint": "Struktura podataka sa slotovima popunjenim vrednostima"
+  },
+  {
+    "section": "Predstavljanje znanja",
+    "question": "Šta je skript?",
+    "options": [
+      "Model informacija potreban za interpretaciju situacije",
+      "Uređaj za unos teksta",
+      "Vrsta fonta",
+      "Metoda štampe"
+    ],
+    "answer": 0,
+    "hint": "Model informacija potreban za interpretaciju situacije"
+  },
+  {
+    "section": "Predstavljanje znanja",
+    "question": "Šta predstavljaju produkciona pravila?",
+    "options": [
+      "Proceduralno znanje kroz uslov/akcija pravila",
+      "Semantičku memoriju za događaje",
+      "Kognitivni test sa korisnicima",
+      "Rezoluciju monitora"
+    ],
+    "answer": 0,
+    "hint": "Proceduralno znanje kroz uslov/akcija pravila"
+  },
+  {
+    "section": "Učenje i zaboravljanje",
+    "question": "Šta kaže hipoteza o ukupnom vremenu?",
+    "options": [
+      "Količina memorisanih informacija proporcionalna je provedenom vremenu",
+      "Zaboravljanje se dešava samo odjednom",
+      "Učenje je bolje samo pred ispit",
+      "Memorija nema veze sa vremenom"
+    ],
+    "answer": 0,
+    "hint": "Količina memorisanih informacija proporcionalna je provedenom vremenu"
+  },
+  {
+    "section": "Učenje i zaboravljanje",
+    "question": "Šta je efekat distribucije prakse?",
+    "options": [
+      "Učenje je optimalnije kada je raspoređeno kroz duži period",
+      "Učenje je bolje kada je sve odjednom",
+      "Pamćenje zavisi samo od boje ekrana",
+      "Vežbanje smanjuje svako znanje"
+    ],
+    "answer": 0,
+    "hint": "Učenje je optimalnije kada je raspoređeno kroz duži period"
+  },
+  {
+    "section": "Učenje i zaboravljanje",
+    "question": "Šta je retroaktivno preklapanje?",
+    "options": [
+      "Nove informacije zamenjuju stare",
+      "Stare informacije automatski nestaju pre učenja novih",
+      "Senzorska memorija prelazi u ikoničku",
+      "Korisnik menja tastaturu"
+    ],
+    "answer": 0,
+    "hint": "Nove informacije zamenjuju stare"
+  },
+  {
+    "section": "Prizivanje",
+    "question": "Zašto je prepoznavanje manje složeno od prizivanja?",
+    "options": [
+      "Informacija sama služi kao smernica",
+      "Zato što traži više mentalnih modela",
+      "Zato što nema stimulansa",
+      "Zato što zahteva abdukciju"
+    ],
+    "answer": 0,
+    "hint": "Informacija sama služi kao smernica"
+  },
+  {
+    "section": "Zaključivanje",
+    "question": "Šta je deduktivno zaključivanje?",
+    "options": [
+      "Izvođenje logičkih zaključaka iz datih pretpostavki",
+      "Generalizacija iz viđenih slučajeva",
+      "Zaključivanje uzroka iz događaja",
+      "Pamćenje kroz ponavljanje"
+    ],
+    "answer": 0,
+    "hint": "Izvođenje logičkih zaključaka iz datih pretpostavki"
+  },
+  {
+    "section": "Zaključivanje",
+    "question": "Šta je induktivno zaključivanje?",
+    "options": [
+      "Generalizacija na osnovu viđenih slučajeva",
+      "Zaključivanje iz strogo validnih premisa",
+      "Zaključivanje o uzroku iz događaja",
+      "Pomeranje kursora"
+    ],
+    "answer": 0,
+    "hint": "Generalizacija na osnovu viđenih slučajeva"
+  },
+  {
+    "section": "Zaključivanje",
+    "question": "Zašto je indukcija nepouzdana?",
+    "options": [
+      "Može se oboriti negativnim dokazom, ali se nikad konačno ne dokazuje",
+      "Uvek daje netačne rezultate",
+      "Ne koristi viđene slučajeve",
+      "Važi samo za računare"
+    ],
+    "answer": 0,
+    "hint": "Može se oboriti negativnim dokazom, ali se nikad konačno ne dokazuje"
+  },
+  {
+    "section": "Zaključivanje",
+    "question": "Šta je abduktivno zaključivanje?",
+    "options": [
+      "Zaključivanje o uzroku na osnovu događaja",
+      "Pamćenje nizova događaja",
+      "Podela zadatka na akcije",
+      "Merenje vremena reakcije"
+    ],
+    "answer": 0,
+    "hint": "Zaključivanje o uzroku na osnovu događaja"
+  },
+  {
+    "section": "Rešavanje problema",
+    "question": "Šta je produktivno rešavanje problema u geštalt teoriji?",
+    "options": [
+      "Rešavanje bazirano na uvidu i restrukturiranju problema",
+      "Mehaničko ponavljanje naučenog rešenja",
+      "Unos teksta preko tastature",
+      "Klik na ponuđenu opciju"
+    ],
+    "answer": 0,
+    "hint": "Rešavanje bazirano na uvidu i restrukturiranju problema"
+  },
+  {
+    "section": "Rešavanje problema",
+    "question": "Šta obuhvata prostor problema?",
+    "options": [
+      "Moguća stanja problema i operacije za generisanje stanja",
+      "Samo trenutni ekran aplikacije",
+      "Samo grafički dizajn",
+      "Samo listu korisnika"
+    ],
+    "answer": 0,
+    "hint": "Moguća stanja problema i operacije za generisanje stanja"
+  },
+  {
+    "section": "Rešavanje problema",
+    "question": "Šta je analogno mapiranje?",
+    "options": [
+      "Korišćenje znanja o sličnim problemima u sličnom domenu",
+      "Merenje osvetljenosti ekrana",
+      "Unos rukopisom",
+      "Grupisanje boja"
+    ],
+    "answer": 0,
+    "hint": "Korišćenje znanja o sličnim problemima u sličnom domenu"
+  },
+  {
+    "section": "Veštine",
+    "question": "Šta je paketiranje pri sticanju veština?",
+    "options": [
+      "Grupisanje više informacija u pakete radi optimizacije radne memorije",
+      "Pakovanje aplikacije za instalaciju",
+      "Smanjenje rezolucije ekrana",
+      "Brisanje svih starih informacija"
+    ],
+    "answer": 0,
+    "hint": "Grupisanje više informacija u pakete radi optimizacije radne memorije"
+  },
+  {
+    "section": "Greške",
+    "question": "Šta je omaška (slip)?",
+    "options": [
+      "Dobra namera, ali neuspešna realizacija",
+      "Pogrešna namera zbog nerazumevanja",
+      "Uvek namerna zloupotreba",
+      "Uspešan zadatak bez greške"
+    ],
+    "answer": 0,
+    "hint": "Dobra namera, ali neuspešna realizacija"
+  },
+  {
+    "section": "Greške",
+    "question": "Šta je greška (mistake) u odnosu na omašku?",
+    "options": [
+      "Pogrešna namera, najčešće zbog nerazumevanja",
+      "Dobra namera ali pogrešan klik",
+      "Samo hardverski kvar",
+      "Samo problem sa bojom"
+    ],
+    "answer": 0,
+    "hint": "Pogrešna namera, najčešće zbog nerazumevanja"
+  },
+  {
+    "section": "Mentalni modeli",
+    "question": "Kada nastaje greška zbog mentalnog modela?",
+    "options": [
+      "Kada se korisnikov mentalni model razlikuje od realnosti sistema",
+      "Kada je interfejs estetski dopadljiv",
+      "Kada je korisnik ekspert",
+      "Kada se koristi undo"
+    ],
+    "answer": 0,
+    "hint": "Kada se korisnikov mentalni model razlikuje od realnosti sistema"
+  },
+  {
+    "section": "Emocije",
+    "question": "Šta kaže James-Lange teorija emocija?",
+    "options": [
+      "Emocije su interpretacija fizioloških reakcija na stimulanse",
+      "Emocije su samo logički zaključci",
+      "Emocije ne utiču na rad",
+      "Emocije su isključivo greške sistema"
+    ],
+    "answer": 0,
+    "hint": "Emocije su interpretacija fizioloških reakcija na stimulanse"
+  },
+  {
+    "section": "Emocije",
+    "question": "Šta je afekt?",
+    "options": [
+      "Biološki odgovor na fizički stimulans",
+      "Tip tastature",
+      "Vrsta dugoročne memorije",
+      "Metoda štampe"
+    ],
+    "answer": 0,
+    "hint": "Biološki odgovor na fizički stimulans"
+  },
+  {
+    "section": "Emocije",
+    "question": "Kako pozitivan afekt utiče na rešavanje problema?",
+    "options": [
+      "Može podstaći kreativno rešavanje problema",
+      "Uvek sužava svest",
+      "Uvek povećava greške",
+      "Nema nikakav uticaj"
+    ],
+    "answer": 0,
+    "hint": "Može podstaći kreativno rešavanje problema"
+  },
+  {
+    "section": "Emocije",
+    "question": "Koja je posledica negativnog afekta?",
+    "options": [
+      "Suženje svesti i otežano izvođenje i lakših zadataka",
+      "Povećana kreativnost u svakom slučaju",
+      "Bolja rezolucija ekrana",
+      "Brže štampanje"
+    ],
+    "answer": 0,
+    "hint": "Suženje svesti i otežano izvođenje i lakših zadataka"
+  },
+  {
+    "section": "Dizajn i psihologija",
+    "question": "Zašto plavu ne treba koristiti za važne detalje?",
+    "options": [
+      "Oštrina/percepcija plave je slaba",
+      "Plava zauzima više memorije",
+      "Plava ne postoji na LCD ekranu",
+      "Plava uvek znači grešku"
+    ],
+    "answer": 0,
+    "hint": "Oštrina/percepcija plave je slaba"
+  },
+  {
+    "section": "Upotrebljivost",
+    "question": "Na šta upotrebljivost daje odgovor?",
+    "options": [
+      "Da li korisnik može da iskoristi funkcionalnosti sistema",
+      "Da li je sistem skup",
+      "Da li aplikacija ima najlepši logo",
+      "Da li je baza podataka velika"
+    ],
+    "answer": 0,
+    "hint": "Da li korisnik može da iskoristi funkcionalnosti sistema"
+  },
+  {
+    "section": "Upotrebljivost",
+    "question": "Koje su Nielsenove osnovne komponente definicije upotrebljivosti u skripti?",
+    "options": [
+      "Učenje, efikasnost, pamćenje, greške i zadovoljstvo",
+      "Cena, reklama, profit, boja i logo",
+      "CPU, RAM, disk, mreža i ekran",
+      "Kôd, kompajler, server, domen i backup"
+    ],
+    "answer": 0,
+    "hint": "Učenje, efikasnost, pamćenje, greške i zadovoljstvo"
+  },
+  {
+    "section": "Prihvatljivost",
+    "question": "Koja dva oblika prihvatljivosti sistema se navode?",
+    "options": [
+      "Društvena i praktična",
+      "Tehnička i marketinška",
+      "Vizuelna i auditivna",
+      "Lokalna i globalna"
+    ],
+    "answer": 0,
+    "hint": "Društvena i praktična"
+  },
+  {
+    "section": "Praktična prihvatljivost",
+    "question": "Koje dve kategorije čine korisnost sistema?",
+    "options": [
+      "Uslužnost i upotrebljivost",
+      "Cena i brzina",
+      "Boja i layout",
+      "Učenje i štampa"
+    ],
+    "answer": 0,
+    "hint": "Uslužnost i upotrebljivost"
+  },
+  {
+    "section": "Analiza zahteva",
+    "question": "Šta je prvi cilj analize zahteva?",
+    "options": [
+      "Utvrditi potrebe korisnika",
+      "Odabrati boju dugmeta",
+      "Povećati broj opcija",
+      "Smanjiti dokumentaciju"
+    ],
+    "answer": 0,
+    "hint": "Utvrditi potrebe korisnika"
+  },
+  {
+    "section": "Pouzdanost sistema",
+    "question": "Šta upotrebljiv sistem treba da uradi u pogledu pouzdanosti?",
+    "options": [
+      "Akcije treba da rade prema očekivanju i sistem ne sme uvoditi greške",
+      "Treba da ima što više skrivenih opcija",
+      "Treba da ignoriše privatnost",
+      "Treba da radi bez feedback-a"
+    ],
+    "answer": 0,
+    "hint": "Akcije treba da rade prema očekivanju i sistem ne sme uvoditi greške"
+  },
+  {
+    "section": "Standardizacija",
+    "question": "Zašto koristiti industrijske standarde kada postoje?",
+    "options": [
+      "Radi lakšeg učenja i izbegavanja grešaka",
+      "Radi povećanja broja boja",
+      "Radi smanjenja broja korisnika",
+      "Zato što uklanjaju potrebu za testiranjem"
+    ],
+    "answer": 0,
+    "hint": "Radi lakšeg učenja i izbegavanja grešaka"
+  },
+  {
+    "section": "Konzistentnost",
+    "question": "Šta obuhvata konzistentnost sistema?",
+    "options": [
+      "Kompatibilnost verzija, uputstva, termina, boja i uobičajenih komandi",
+      "Samo isti font na naslovu",
+      "Samo brzinu servera",
+      "Samo raspored tastature"
+    ],
+    "answer": 0,
+    "hint": "Kompatibilnost verzija, uputstva, termina, boja i uobičajenih komandi"
+  },
+  {
+    "section": "Portabilnost",
+    "question": "Šta omogućava portabilnost?",
+    "options": [
+      "Prenos podataka između različitih softverskih i hardverskih okruženja",
+      "Brisanje korisničkih podataka",
+      "Veći broj grešaka",
+      "Samo rad na jednom uređaju"
+    ],
+    "answer": 0,
+    "hint": "Prenos podataka između različitih softverskih i hardverskih okruženja"
+  },
+  {
+    "section": "Tipovi sistema",
+    "question": "Kod kritičnih sistema i sistema u realnom vremenu najvažniji su:",
+    "options": [
+      "Visoka pouzdanost i efikasnost",
+      "Zabava i vizuelni efekti",
+      "Nizak broj funkcija",
+      "Subjektivno zadovoljstvo iznad svega"
+    ],
+    "answer": 0,
+    "hint": "Visoka pouzdanost i efikasnost"
+  },
+  {
+    "section": "Tipovi sistema",
+    "question": "Za kritične sisteme je prihvatljivo duže vreme obuke ako:",
+    "options": [
+      "Obezbeđuje rad bez grešaka",
+      "Povećava broj opcija",
+      "Smanjuje sigurnost",
+      "Uklanja potrebu za dokumentacijom"
+    ],
+    "answer": 0,
+    "hint": "Obezbeđuje rad bez grešaka"
+  },
+  {
+    "section": "Tipovi sistema",
+    "question": "Kod industrijskih i komercijalnih sistema posebno je bitna:",
+    "options": [
+      "Jednostavnost učenja i brzina rada zbog transakcija",
+      "Samo estetska dopadljivost",
+      "Samo VR podrška",
+      "Samo broj avatara"
+    ],
+    "answer": 0,
+    "hint": "Jednostavnost učenja i brzina rada zbog transakcija"
+  },
+  {
+    "section": "Tipovi sistema",
+    "question": "Za kancelarijske, kućne i zabavne sisteme obavezni su:",
+    "options": [
+      "Jednostavnost učenja, nizak nivo grešaka i zadovoljstvo",
+      "Duga obuka i visoka tolerancija na greške",
+      "Samo komandna linija",
+      "Bez pomoći"
+    ],
+    "answer": 0,
+    "hint": "Jednostavnost učenja, nizak nivo grešaka i zadovoljstvo"
+  },
+  {
+    "section": "Socio-tehnički sistemi",
+    "question": "Koji su ključni problemi socio-tehničkih sistema?",
+    "options": [
+      "Poverenje, privatnost, odgovornost i sigurnost",
+      "Samo grafički dizajn",
+      "Samo brzina miša",
+      "Samo izbor fonta"
+    ],
+    "answer": 0,
+    "hint": "Poverenje, privatnost, odgovornost i sigurnost"
+  },
+  {
+    "section": "Upotrebljivost za sve",
+    "question": "Šta znači tvrdnja da prosečan korisnik ne postoji?",
+    "options": [
+      "Dizajn mora uzeti u obzir varijacije korisnika, ne samo prosek",
+      "Treba dizajnirati samo za eksperte",
+      "Treba ignorisati korisnike sa posebnim potrebama",
+      "Svi korisnici imaju iste sposobnosti"
+    ],
+    "answer": 0,
+    "hint": "Dizajn mora uzeti u obzir varijacije korisnika, ne samo prosek"
+  },
+  {
+    "section": "Antropometrija",
+    "question": "Šta proučava antropometrija u kontekstu dizajna?",
+    "options": [
+      "Fizičke dimenzije i karakteristike korisnika",
+      "Semantičke mreže",
+      "Broj grešaka u kôdu",
+      "Boju ekrana"
+    ],
+    "answer": 0,
+    "hint": "Fizičke dimenzije i karakteristike korisnika"
+  },
+  {
+    "section": "Kulturološke razlike",
+    "question": "Šta spada u kulturološke razlike relevantne za interfejs?",
+    "options": [
+      "Pravac pisanja, format datuma, valuta, jedinice, ikone i boje",
+      "Samo brzina interneta",
+      "Samo tip procesora",
+      "Samo broj korisničkih naloga"
+    ],
+    "answer": 0,
+    "hint": "Pravac pisanja, format datuma, valuta, jedinice, ikone i boje"
+  },
+  {
+    "section": "Posebne potrebe",
+    "question": "Šta treba uzeti u obzir kod korisnika sa oštećenjem vida?",
+    "options": [
+      "Uvećanje ekrana, kontrast boja, tekst-u-govor i glasovne komande",
+      "Samo više animacija",
+      "Samo sitniji font",
+      "Samo plave detalje"
+    ],
+    "answer": 0,
+    "hint": "Uvećanje ekrana, kontrast boja, tekst-u-govor i glasovne komande"
+  },
+  {
+    "section": "Mere upotrebljivosti",
+    "question": "Kojih je pet bitnih ljudskih faktora u merama upotrebljivosti?",
+    "options": [
+      "Vreme učenja, brzina završetka, nivo grešaka, zaboravljanje tokom vremena i zadovoljstvo",
+      "Cena, profit, tržište, server i logo",
+      "DPI, RAM, CPU, GPU i disk",
+      "Boja, font, ikona, slika i senka"
+    ],
+    "answer": 0,
+    "hint": "Vreme učenja, brzina završetka, nivo grešaka, zaboravljanje tokom vremena i zadovoljstvo"
+  },
+  {
+    "section": "Mere upotrebljivosti",
+    "question": "Koja je tipična mera upotrebljivosti?",
+    "options": [
+      "Vreme za završetak zadatka",
+      "Broj boja u logotipu",
+      "Cena licence dizajnera",
+      "Veličina kancelarije"
+    ],
+    "answer": 0,
+    "hint": "Vreme za završetak zadatka"
+  },
+  {
+    "section": "Mere upotrebljivosti",
+    "question": "Zašto su ciljevi upotrebljivosti često kompromis?",
+    "options": [
+      "Jer mogu biti međusobno suprotstavljeni",
+      "Jer se ne mogu meriti nikako",
+      "Jer korisnici nikad ne greše",
+      "Jer svaka aplikacija ima isti kontekst"
+    ],
+    "answer": 0,
+    "hint": "Jer mogu biti međusobno suprotstavljeni"
+  },
+  {
+    "section": "Životni ciklus",
+    "question": "Kada se sprovodi inženjering upotrebljivosti?",
+    "options": [
+      "Tokom celog razvoja proizvoda, pre, tokom i posle dizajna",
+      "Samo posle puštanja u rad",
+      "Samo pre ideje proizvoda",
+      "Samo kada nema korisnika"
+    ],
+    "answer": 0,
+    "hint": "Tokom celog razvoja proizvoda, pre, tokom i posle dizajna"
+  },
+  {
+    "section": "Poznavanje korisnika",
+    "question": "Ko sve može biti korisnik sistema?",
+    "options": [
+      "Svi koji imaju dodira sa sistemom, uključujući administratore",
+      "Samo krajnja mušterija",
+      "Samo programer",
+      "Samo vlasnik firme"
+    ],
+    "answer": 0,
+    "hint": "Svi koji imaju dodira sa sistemom, uključujući administratore"
+  },
+  {
+    "section": "Analiza zadataka",
+    "question": "Šta je izlaz analize zadataka?",
+    "options": [
+      "Lista poslova, preduslovi, koraci, izveštaji i komunikacione potrebe",
+      "Samo finalni logo",
+      "Samo broj servera",
+      "Samo spisak programera"
+    ],
+    "answer": 0,
+    "hint": "Lista poslova, preduslovi, koraci, izveštaji i komunikacione potrebe"
+  },
+  {
+    "section": "Analiza zadataka",
+    "question": "Zašto je dobro pitati korisnike za konkretan primer?",
+    "options": [
+      "Da bi se razumelo kako zaista obavljaju zadatak",
+      "Da bi se izbeglo testiranje",
+      "Da bi se povećao broj boja",
+      "Da bi se sakrile greške"
+    ],
+    "answer": 0,
+    "hint": "Da bi se razumelo kako zaista obavljaju zadatak"
+  },
+  {
+    "section": "Funkcionalna analiza",
+    "question": "Šta je poenta reinženjeringa?",
+    "options": [
+      "Ne preslikavati slepo postojeći rad, već poboljšati gde je moguće",
+      "Uvek kopirati stari sistem",
+      "Izbaciti sve funkcije",
+      "Raditi bez korisnika"
+    ],
+    "answer": 0,
+    "hint": "Ne preslikavati slepo postojeći rad, već poboljšati gde je moguće"
+  },
+  {
+    "section": "Evoluiranje korisnika",
+    "question": "Kako se korisnici menjaju vremenom?",
+    "options": [
+      "Postaju eksperti i žele brže, ne nužno intuitivnije načine rada",
+      "Uvek ostaju početnici",
+      "Prestaju da koriste prečice",
+      "Zaboravljaju svaki sistem posle dana"
+    ],
+    "answer": 0,
+    "hint": "Postaju eksperti i žele brže, ne nužno intuitivnije načine rada"
+  },
+  {
+    "section": "Kompetitivna analiza",
+    "question": "Zašto analizirati postojeća rešenja?",
+    "options": [
+      "Da se dobiju smernice šta treba i šta ne treba raditi",
+      "Da se izbegne rad sa korisnicima zauvek",
+      "Da se poveća cena bez razloga",
+      "Da se prepiše svaki detalj"
+    ],
+    "answer": 0,
+    "hint": "Da se dobiju smernice šta treba i šta ne treba raditi"
+  },
+  {
+    "section": "Ciljevi upotrebljivosti",
+    "question": "Šta treba definisati kod ciljeva upotrebljivosti?",
+    "options": [
+      "Prioritete, metriku i kvantifikovane ciljeve",
+      "Samo naziv aplikacije",
+      "Samo boju pozadine",
+      "Samo broj slajdova"
+    ],
+    "answer": 0,
+    "hint": "Prioritete, metriku i kvantifikovane ciljeve"
+  },
+  {
+    "section": "Finansijska analiza",
+    "question": "Kada je posebno vredno ulagati u brže učenje sistema?",
+    "options": [
+      "Kada veliki broj korisnika koristi sistem i obuka mnogo košta",
+      "Kada sistem niko ne koristi",
+      "Kada je sistem samo za jednog eksperta bez obuke",
+      "Kada nema budžeta"
+    ],
+    "answer": 0,
+    "hint": "Kada veliki broj korisnika koristi sistem i obuka mnogo košta"
+  },
+  {
+    "section": "Paralelni dizajn",
+    "question": "Šta je paralelni dizajn?",
+    "options": [
+      "Nezavisan razvoj više početnih rešenja radi izbora najboljeg",
+      "Rad samo jednog dizajnera na jednom rešenju",
+      "Kopiranje konkurencije bez izmene",
+      "Testiranje samo finalnog proizvoda"
+    ],
+    "answer": 0,
+    "hint": "Nezavisan razvoj više početnih rešenja radi izbora najboljeg"
+  },
+  {
+    "section": "Participativni dizajn",
+    "question": "Šta je participativni dizajn?",
+    "options": [
+      "Uključivanje korisnika i domenskih eksperata u dizajn",
+      "Dizajn bez korisnika",
+      "Automatsko generisanje boja",
+      "Samo interna recenzija koda"
+    ],
+    "answer": 0,
+    "hint": "Uključivanje korisnika i domenskih eksperata u dizajn"
+  },
+  {
+    "section": "Participativni dizajn",
+    "question": "Zašto „korisnik nije uvek u pravu“?",
+    "options": [
+      "Zato što njihove sugestije treba tumačiti kroz ciljeve i kontekst dizajna",
+      "Zato što korisnike treba ignorisati",
+      "Zato što korisnik nikada ne zna zadatak",
+      "Zato što je svaki zahtev loš"
+    ],
+    "answer": 0,
+    "hint": "Zato što njihove sugestije treba tumačiti kroz ciljeve i kontekst dizajna"
+  },
+  {
+    "section": "Koordinisani dizajn",
+    "question": "Na šta se odnosi koordinisani dizajn kompletnog interfejsa?",
+    "options": [
+      "Konzistentnost aplikacije, dokumentacije, pomoći, tutorijala i verzija",
+      "Samo boju dugmeta",
+      "Samo raspored tastature",
+      "Samo server"
+    ],
+    "answer": 0,
+    "hint": "Konzistentnost aplikacije, dokumentacije, pomoći, tutorijala i verzija"
+  },
+  {
+    "section": "Uputstva i heuristike",
+    "question": "Koji su nivoi uputstava?",
+    "options": [
+      "Opšta, specifična za kategoriju i specifična za proizvod",
+      "Brza, spora i srednja",
+      "CRT, LCD i LED",
+      "Ikonička, ehoička i haptička"
+    ],
+    "answer": 0,
+    "hint": "Opšta, specifična za kategoriju i specifična za proizvod"
+  },
+  {
+    "section": "Prototip",
+    "question": "Koja je osnovna ideja prototipa?",
+    "options": [
+      "Ušteda vremena i troškova kroz nešto što se može evaluirati",
+      "Finalni sistem spreman za produkciju",
+      "Zamena za svu dokumentaciju",
+      "Izbegavanje korisnika"
+    ],
+    "answer": 0,
+    "hint": "Ušteda vremena i troškova kroz nešto što se može evaluirati"
+  },
+  {
+    "section": "Prototip",
+    "question": "Zašto prototip ne treba koristiti za dalji razvoj sistema?",
+    "options": [
+      "Jer se u brzom prototipu zanemaruju performanse, greške i kvalitet koda",
+      "Jer prototip ne može imati ekran",
+      "Jer korisnici ne smeju da ga vide",
+      "Jer je uvek skuplji od finalnog sistema"
+    ],
+    "answer": 0,
+    "hint": "Jer se u brzom prototipu zanemaruju performanse, greške i kvalitet koda"
+  },
+  {
+    "section": "Prototip",
+    "question": "Šta je horizontalni prototip?",
+    "options": [
+      "Širok prikaz opcija sa užim setom funkcija, često simulacija bez funkcionalnosti",
+      "Skoro sva funkcionalnost sa uskim setom opcija",
+      "Finalna baza podataka",
+      "Testiranje hardvera"
+    ],
+    "answer": 0,
+    "hint": "Širok prikaz opcija sa užim setom funkcija, često simulacija bez funkcionalnosti"
+  },
+  {
+    "section": "Prototip",
+    "question": "Šta je vertikalni prototip?",
+    "options": [
+      "Skoro sva funkcionalnost, ali uži set opcija",
+      "Samo izgled bez funkcionalnosti",
+      "Samo dokumentacija",
+      "Samo dijagram toka"
+    ],
+    "answer": 0,
+    "hint": "Skoro sva funkcionalnost, ali uži set opcija"
+  },
+  {
+    "section": "Scenario",
+    "question": "Šta je scenario?",
+    "options": [
+      "Minimalistički prototip sa definisanom interakcijom i test podacima",
+      "Vrsta miša",
+      "Tip memorije",
+      "Metoda štampe"
+    ],
+    "answer": 0,
+    "hint": "Minimalistički prototip sa definisanom interakcijom i test podacima"
+  },
+  {
+    "section": "Evaluacija interfejsa",
+    "question": "Šta je izlaz evaluacije interfejsa?",
+    "options": [
+      "Lista problema sa interfejsom",
+      "Lista programskih jezika",
+      "Samo ukupna cena",
+      "Samo broj korisnika"
+    ],
+    "answer": 0,
+    "hint": "Lista problema sa interfejsom"
+  },
+  {
+    "section": "Iterativni dizajn",
+    "question": "Šta sledi posle identifikacije problema?",
+    "options": [
+      "Nova iteracija dizajna uz prethodno određivanje prioriteta",
+      "Odmah finalno puštanje bez provere",
+      "Brisanje svih rezultata",
+      "Prekid projekta"
+    ],
+    "answer": 0,
+    "hint": "Nova iteracija dizajna uz prethodno određivanje prioriteta"
+  },
+  {
+    "section": "Povratne informacije sa terena",
+    "question": "Koji su načini prikupljanja povratnih informacija sa terena?",
+    "options": [
+      "Statistika, upitnici, terenske studije, pritužbe i sugestije",
+      "Samo boje i fontovi",
+      "Samo CPU logovi",
+      "Samo reklame"
+    ],
+    "answer": 0,
+    "hint": "Statistika, upitnici, terenske studije, pritužbe i sugestije"
+  },
+  {
+    "section": "Principi interfejsa",
+    "question": "Koji princip kaže da se prikazuje tačno ono što korisniku treba kada mu treba?",
+    "options": [
+      "Jednostavan i prirodan dijalog",
+      "Prepoznavanje govora",
+      "Batch obrada",
+      "Anti-aliasing"
+    ],
+    "answer": 0,
+    "hint": "Jednostavan i prirodan dijalog"
+  },
+  {
+    "section": "Grafički dizajn",
+    "question": "Raspored komandi i informacija treba da prati:",
+    "options": [
+      "Geštalt pravila ljudske percepcije",
+      "Samo redosled iz baze",
+      "Nasumičan raspored",
+      "Samo abecedu"
+    ],
+    "answer": 0,
+    "hint": "Geštalt pravila ljudske percepcije"
+  },
+  {
+    "section": "Boje u interfejsu",
+    "question": "Za šta je najbolje koristiti boje u interfejsu?",
+    "options": [
+      "Kategorizaciju, izdvajanje i isticanje",
+      "Davanje preciznih kvantitativnih informacija",
+      "Jedini način komunikacije",
+      "Skrivanje važnih elemenata"
+    ],
+    "answer": 0,
+    "hint": "Kategorizaciju, izdvajanje i isticanje"
+  },
+  {
+    "section": "Manje je više",
+    "question": "Šta znači princip „manje je više“?",
+    "options": [
+      "Prikazati ključne informacije za trenutnu akciju i ne pretrpavati opcijama",
+      "Ukloniti sve funkcije",
+      "Koristiti najmanji mogući font",
+      "Uvek sakriti pomoć"
+    ],
+    "answer": 0,
+    "hint": "Prikazati ključne informacije za trenutnu akciju i ne pretrpavati opcijama"
+  },
+  {
+    "section": "Jezik korisnika",
+    "question": "Šta znači govoriti jezikom korisnika?",
+    "options": [
+      "Koristiti reči, pojmove i perspektivu blisku korisniku",
+      "Koristiti sistemske kodove",
+      "Koristiti samo tehničke skraćenice",
+      "Pisati iz perspektive programera"
+    ],
+    "answer": 0,
+    "hint": "Koristiti reči, pojmove i perspektivu blisku korisniku"
+  },
+  {
+    "section": "Jezik korisnika",
+    "question": "Zašto treba omogućiti sinonime za objekte?",
+    "options": [
+      "Jer korisnici isti objekat nazivaju različitim imenima",
+      "Jer sistem ne treba da razume korisnika",
+      "Jer sinonimi smanjuju memoriju računara",
+      "Jer se time ukida pretraga"
+    ],
+    "answer": 0,
+    "hint": "Jer korisnici isti objekat nazivaju različitim imenima"
+  },
+  {
+    "section": "Metafore",
+    "question": "Koji je primer dobre metafore za brisanje sadržaja?",
+    "options": [
+      "Recycle bin",
+      "Paper shredder u svakom kontekstu",
+      "DPI",
+      "RAM"
+    ],
+    "answer": 0,
+    "hint": "Recycle bin"
+  },
+  {
+    "section": "Memorijsko opterećenje",
+    "question": "Koja praksa smanjuje opterećenje memorije korisnika?",
+    "options": [
+      "Ponuditi izbor umesto da korisnik sam generiše unos",
+      "Tražiti da pamti sve kodove",
+      "Sakrivati format unosa",
+      "Menjati pravila kroz sistem"
+    ],
+    "answer": 0,
+    "hint": "Ponuditi izbor umesto da korisnik sam generiše unos"
+  },
+  {
+    "section": "Memorijsko opterećenje",
+    "question": "Zašto prikazati format unosa?",
+    "options": [
+      "Da korisnik zna šta se očekuje, npr. format datuma",
+      "Da se poveća broj grešaka",
+      "Da se produži vreme unosa",
+      "Da se sakrije raspon podataka"
+    ],
+    "answer": 0,
+    "hint": "Da korisnik zna šta se očekuje, npr. format datuma"
+  },
+  {
+    "section": "Konzistentnost",
+    "question": "Šta znači konzistentnost komandi?",
+    "options": [
+      "Ista komanda znači istu akciju u celom sistemu",
+      "Komanda menja značenje po ekranu",
+      "Svaki ekran ima drugi stil bez razloga",
+      "Konzistentnost je samo dekoracija"
+    ],
+    "answer": 0,
+    "hint": "Ista komanda znači istu akciju u celom sistemu"
+  },
+  {
+    "section": "Feedback",
+    "question": "Šta sistem treba stalno da obezbeđuje?",
+    "options": [
+      "Povratnu informaciju o korisničkim akcijama",
+      "Samo reklame",
+      "Samo greške bez objašnjenja",
+      "Samo zvuk bez prikaza"
+    ],
+    "answer": 0,
+    "hint": "Povratnu informaciju o korisničkim akcijama"
+  },
+  {
+    "section": "Feedback",
+    "question": "Kada treba koristiti indikator progresa?",
+    "options": [
+      "Za akcije duže od 10 sekundi",
+      "Za svaku akciju od 0.1 s",
+      "Nikada",
+      "Samo za greške korisnika"
+    ],
+    "answer": 0,
+    "hint": "Za akcije duže od 10 sekundi"
+  },
+  {
+    "section": "Feedback",
+    "question": "Šta je preporuka za akcije od 2 do 10 sekundi?",
+    "options": [
+      "Diskretnije rešenje poput peščanika",
+      "Veliki progress bar preko celog ekrana",
+      "Bez ikakve povratne informacije",
+      "Prekid aplikacije"
+    ],
+    "answer": 0,
+    "hint": "Diskretnije rešenje poput peščanika"
+  },
+  {
+    "section": "Izlazi",
+    "question": "Šta su jasno označeni izlazi?",
+    "options": [
+      "Vidljiv način izlaska iz neželjene situacije, uz undo/cancel gde je moguće",
+      "Sakriveno dugme za izlaz",
+      "Zaključavanje korisnika u modal",
+      "Brisanje podataka bez potvrde"
+    ],
+    "answer": 0,
+    "hint": "Vidljiv način izlaska iz neželjene situacije, uz undo/cancel gde je moguće"
+  },
+  {
+    "section": "Prečice",
+    "question": "Kome su posebno namenjene prečice?",
+    "options": [
+      "Naprednim korisnicima",
+      "Samo deci",
+      "Samo korisnicima bez iskustva",
+      "Samo administratorima baze"
+    ],
+    "answer": 0,
+    "hint": "Naprednim korisnicima"
+  },
+  {
+    "section": "Prečice",
+    "question": "Šta je type-ahead?",
+    "options": [
+      "Pomoć u dopunjavanju tekstualnih polja za unos",
+      "Vrsta CRT monitora",
+      "Metoda štampe",
+      "Tip dugoročne memorije"
+    ],
+    "answer": 0,
+    "hint": "Pomoć u dopunjavanju tekstualnih polja za unos"
+  },
+  {
+    "section": "Poruke o greškama",
+    "question": "Koje pravilo važi za dobre poruke o greškama?",
+    "options": [
+      "Jednostavne, precizne, konstruktivne i učtive",
+      "Tehnički kodovi bez objašnjenja",
+      "Prebacivanje krivice na korisnika",
+      "Generičke i neodređene poruke"
+    ],
+    "answer": 0,
+    "hint": "Jednostavne, precizne, konstruktivne i učtive"
+  },
+  {
+    "section": "Prevencija grešaka",
+    "question": "Kako se može sprečiti pogrešan unos?",
+    "options": [
+      "Nuđenjem liste izbora i ograničenja",
+      "Sakrivanjem validnih opcija",
+      "Uklanjanjem povratne informacije",
+      "Korišćenjem sličnih komandi"
+    ],
+    "answer": 0,
+    "hint": "Nuđenjem liste izbora i ograničenja"
+  },
+  {
+    "section": "Prevencija grešaka",
+    "question": "Zašto izbegavati modove unosa?",
+    "options": [
+      "Jer korisnik može zaboraviti u kom je modu i napraviti grešku",
+      "Jer modovi uvek ubrzavaju početnike",
+      "Jer mod nema veze sa greškama",
+      "Jer modovi povećavaju kontrast"
+    ],
+    "answer": 0,
+    "hint": "Jer korisnik može zaboraviti u kom je modu i napraviti grešku"
+  },
+  {
+    "section": "Help",
+    "question": "Kakva treba da bude pomoć/dokumentacija?",
+    "options": [
+      "Dodatna, dostupna i po mogućnosti kontekstualna",
+      "Jedini način za objašnjenje sistema",
+      "Sakrivena u štampi koju korisnik ne može naći",
+      "Bez veze sa trenutnim zadatkom"
+    ],
+    "answer": 0,
+    "hint": "Dodatna, dostupna i po mogućnosti kontekstualna"
+  },
+  {
+    "section": "Heuristička evaluacija",
+    "question": "Kako se sprovodi heuristička evaluacija?",
+    "options": [
+      "Svaki evaluator samostalno prolazi kroz interfejs i pravi listu problema",
+      "Samo jedan korisnik popunjava upitnik",
+      "Sistem automatski sam popravi greške",
+      "Radi se bez prolaska kroz akcije"
+    ],
+    "answer": 0,
+    "hint": "Svaki evaluator samostalno prolazi kroz interfejs i pravi listu problema"
+  },
+  {
+    "section": "Heuristička evaluacija",
+    "question": "Koliko obično traje heuristička evaluacija po evaluatoru u skripti?",
+    "options": [
+      "1–2 sata",
+      "10 sekundi",
+      "7 dana obavezno",
+      "6 meseci"
+    ],
+    "answer": 0,
+    "hint": "1–2 sata"
+  },
+  {
+    "section": "Cognitive walkthrough",
+    "question": "Šta je prvi korak u cognitive walkthrough metodi?",
+    "options": [
+      "Formirati listu zadataka",
+      "Odmah pisati finalni kôd",
+      "Pustiti sistem u produkciju",
+      "Izabrati boju pozadine"
+    ],
+    "answer": 0,
+    "hint": "Formirati listu zadataka"
+  },
+  {
+    "section": "Cognitive walkthrough",
+    "question": "Na šta se deli svaki task u cognitive walkthrough-u?",
+    "options": [
+      "Na akcije koje ga kompletiraju",
+      "Na boje ekrana",
+      "Na korisničke tipove bez cilja",
+      "Na hardverske delove"
+    ],
+    "answer": 0,
+    "hint": "Na akcije koje ga kompletiraju"
+  },
+  {
+    "section": "Cognitive walkthrough",
+    "question": "Koje pitanje pripada cognitive walkthrough-u?",
+    "options": [
+      "Da li će korisnik primetiti da je tačna akcija dostupna?",
+      "Koliko košta server?",
+      "Koja je omiljena boja korisnika?",
+      "Da li je miš optički?"
+    ],
+    "answer": 0,
+    "hint": "Da li će korisnik primetiti da je tačna akcija dostupna?"
+  },
+  {
+    "section": "Testiranje korisnika",
+    "question": "Koji problem pouzdanosti postoji kod testiranja na korisnicima?",
+    "options": [
+      "Najbolji korisnik može biti i 10 puta brži od najsporijeg",
+      "Svi korisnici rade istom brzinom",
+      "Nema individualnih razlika",
+      "Statistika nikad nije potrebna"
+    ],
+    "answer": 0,
+    "hint": "Najbolji korisnik može biti i 10 puta brži od najsporijeg"
+  },
+  {
+    "section": "Testovi",
+    "question": "Šta je formativni test?",
+    "options": [
+      "Test u iterativnom procesu sa ciljem unapređenja",
+      "Test gotovog rešenja samo za poređenje",
+      "Test bez ciljeva",
+      "Test hardvera bez korisnika"
+    ],
+    "answer": 0,
+    "hint": "Test u iterativnom procesu sa ciljem unapređenja"
+  },
+  {
+    "section": "Testovi",
+    "question": "Šta je sumarni test?",
+    "options": [
+      "Test za poređenje, proveru konkurencije ili ocenu gotovog rešenja",
+      "Rani test za samo unapređenje prototipa",
+      "Test bez merenja",
+      "Test samo za boje"
+    ],
+    "answer": 0,
+    "hint": "Test za poređenje, proveru konkurencije ili ocenu gotovog rešenja"
+  },
+  {
+    "section": "Plan testa",
+    "question": "Šta treba definisati pre postavke testa?",
+    "options": [
+      "Cilj, mesto/vreme, opremu, korisnike i kriterijume ocene",
+      "Samo naziv tima",
+      "Samo omiljeni browser",
+      "Samo boju zidova"
+    ],
+    "answer": 0,
+    "hint": "Cilj, mesto/vreme, opremu, korisnike i kriterijume ocene"
+  },
+  {
+    "section": "Test korisnici",
+    "question": "Kakvi treba da budu test korisnici?",
+    "options": [
+      "Što bolji predstavnici budućih korisnika",
+      "Ljudi iz prodaje po pravilu",
+      "Samo programeri",
+      "Samo slučajni prolaznici bez veze sa ciljem"
+    ],
+    "answer": 0,
+    "hint": "Što bolji predstavnici budućih korisnika"
+  },
+  {
+    "section": "Noob vs Nerd",
+    "question": "Zašto početnike i eksperte često treba testirati odvojeno?",
+    "options": [
+      "Imaju različito znanje, ciljeve i zadatke",
+      "Zato što eksperti ne mogu grešiti",
+      "Zato što početnici ne smeju testirati",
+      "Zato što sistem uvek ima samo jednu grupu korisnika"
+    ],
+    "answer": 0,
+    "hint": "Imaju različito znanje, ciljeve i zadatke"
+  },
+  {
+    "section": "Tipovi testa",
+    "question": "Šta je testiranje između subjekata?",
+    "options": [
+      "Različiti korisnici testiraju različite sisteme",
+      "Svi korisnici testiraju sve sisteme",
+      "Jedan korisnik testira sve verzije",
+      "Nema korisnika"
+    ],
+    "answer": 0,
+    "hint": "Različiti korisnici testiraju različite sisteme"
+  },
+  {
+    "section": "Tipovi testa",
+    "question": "Šta je testiranje unutar subjekta?",
+    "options": [
+      "Svi korisnici prolaze kroz sve sisteme",
+      "Različiti korisnici za različite sisteme",
+      "Samo eksperti testiraju",
+      "Samo anketa bez sistema"
+    ],
+    "answer": 0,
+    "hint": "Svi korisnici prolaze kroz sve sisteme"
+  },
+  {
+    "section": "Etika",
+    "question": "Šta treba reći učesnicima pre testa?",
+    "options": [
+      "Da se testira sistem, a ne korisnik",
+      "Da se testira njihova inteligencija",
+      "Da ne smeju da prestanu",
+      "Da su greške javne"
+    ],
+    "answer": 0,
+    "hint": "Da se testira sistem, a ne korisnik"
+  },
+  {
+    "section": "Etika",
+    "question": "Zašto koristiti izraz učesnik umesto subjekt?",
+    "options": [
+      "Zbog etičnijeg i manje stresnog odnosa prema ljudima",
+      "Zato što subjekt znači računar",
+      "Zato što je to tehnički obavezno za CPU",
+      "Nema razloga"
+    ],
+    "answer": 0,
+    "hint": "Zbog etičnijeg i manje stresnog odnosa prema ljudima"
+  },
+  {
+    "section": "Etika",
+    "question": "Šta ne treba raditi tokom testa?",
+    "options": [
+      "Isticati da korisnik greši ili da je spor",
+      "Davati zadatke jedan po jedan",
+      "Obezbediti relaksiranu atmosferu",
+      "Minimizirati broj posmatrača"
+    ],
+    "answer": 0,
+    "hint": "Isticati da korisnik greši ili da je spor"
+  },
+  {
+    "section": "Stadijumi testa",
+    "question": "Koji su stadijumi testa?",
+    "options": [
+      "Priprema, uvod, test, debrifing",
+      "Kodiranje, štampa, skeniranje, arhiva",
+      "Dizajn, boja, logo, reklama",
+      "RAM, CPU, disk, mreža"
+    ],
+    "answer": 0,
+    "hint": "Priprema, uvod, test, debrifing"
+  },
+  {
+    "section": "Merenje performansi",
+    "question": "Šta spada u merenje performansi?",
+    "options": [
+      "Vreme na zadatku, broj grešaka i odnos uspešnih interakcija naspram grešaka",
+      "Samo izgled ikonica",
+      "Samo broj članova tima",
+      "Samo cena opreme"
+    ],
+    "answer": 0,
+    "hint": "Vreme na zadatku, broj grešaka i odnos uspešnih interakcija naspram grešaka"
+  },
+  {
+    "section": "Thinking aloud",
+    "question": "Šta je Thinking Aloud?",
+    "options": [
+      "Korisnik koristi sistem i naglas verbalizuje misli",
+      "Ekspert sam pregleda kod",
+      "Automatsko logovanje bez korisnika",
+      "Samo fokus grupa"
+    ],
+    "answer": 0,
+    "hint": "Korisnik koristi sistem i naglas verbalizuje misli"
+  },
+  {
+    "section": "Thinking aloud",
+    "question": "Zašto je Thinking Aloud ponekad neprirodan?",
+    "options": [
+      "Većina ljudi ne govori stalno svoje misli naglas",
+      "Zato što korisnici nemaju glas",
+      "Zato što metoda ne uključuje zadatke",
+      "Zato što se ne može snimati"
+    ],
+    "answer": 0,
+    "hint": "Većina ljudi ne govori stalno svoje misli naglas"
+  },
+  {
+    "section": "Metode izvan testiranja",
+    "question": "Koje metode izvan testiranja su navedene?",
+    "options": [
+      "Posmatranje, upitnici/intervjui, fokus grupa i logovanje upotrebe",
+      "Samo heuristička evaluacija",
+      "Samo cognitive walkthrough",
+      "Samo programiranje"
+    ],
+    "answer": 0,
+    "hint": "Posmatranje, upitnici/intervjui, fokus grupa i logovanje upotrebe"
+  },
+  {
+    "section": "Posmatranje",
+    "question": "Koja je prednost posmatranja na radnom mestu?",
+    "options": [
+      "Otkrivaju se neočekivani načini korišćenja softvera",
+      "Korisnik dobija direktnu asistenciju posmatrača",
+      "Nema potrebe za beleškama",
+      "Uvek daje kvantitativne rezultate"
+    ],
+    "answer": 0,
+    "hint": "Otkrivaju se neočekivani načini korišćenja softvera"
+  },
+  {
+    "section": "Upitnici i intervjui",
+    "question": "Zašto odgovorima iz upitnika/intervjua ne treba maksimalno verovati?",
+    "options": [
+      "Jer su indirektne metode i zavise od korisničkog izveštavanja",
+      "Jer korisnici ne smeju pričati",
+      "Jer se ne mogu koristiti elektronski",
+      "Jer intervjuer ne sme voditi razgovor"
+    ],
+    "answer": 0,
+    "hint": "Jer su indirektne metode i zavise od korisničkog izveštavanja"
+  },
+  {
+    "section": "Fokus grupa",
+    "question": "Koliko korisnika se navodi za fokus grupu?",
+    "options": [
+      "6–10 korisnika",
+      "1 korisnik",
+      "50–100 korisnika",
+      "Samo 2 eksperta"
+    ],
+    "answer": 0,
+    "hint": "6–10 korisnika"
+  },
+  {
+    "section": "Logovanje upotrebe",
+    "question": "Šta je logovanje upotrebe?",
+    "options": [
+      "Automatsko prikupljanje statističkih podataka od strane računara",
+      "Usmeno ispitivanje korisnika",
+      "Samo snimak lica",
+      "Papirni prototip"
+    ],
+    "answer": 0,
+    "hint": "Automatsko prikupljanje statističkih podataka od strane računara"
+  },
+  {
+    "section": "Računar",
+    "question": "Koje komponente računarskog sistema utiču na interakciju?",
+    "options": [
+      "Ulazni/izlazni uređaji, VR, fizička interakcija, papir, memorija i obrada",
+      "Samo procesor",
+      "Samo ekran",
+      "Samo softverska licenca"
+    ],
+    "answer": 0,
+    "hint": "Ulazni/izlazni uređaji, VR, fizička interakcija, papir, memorija i obrada"
+  },
+  {
+    "section": "Interaktivnost",
+    "question": "Šta je karakterisalo staru paketnu obradu (batch)?",
+    "options": [
+      "Bušene kartice/datoteke, dugo čekanje i izlaz na linijskom štampaču",
+      "Neprekidna direktna kontrola korisnika",
+      "Touch interfejs",
+      "Trenutan odgovor"
+    ],
+    "answer": 0,
+    "hint": "Bušene kartice/datoteke, dugo čekanje i izlaz na linijskom štampaču"
+  },
+  {
+    "section": "Interaktivnost",
+    "question": "Šta karakteriše današnje interaktivne računare?",
+    "options": [
+      "Brzi odgovor i korisnik kontroliše rad veliki deo vremena",
+      "Samo linijski štampač",
+      "Bez povratne informacije",
+      "Samo batch obrada"
+    ],
+    "answer": 0,
+    "hint": "Brzi odgovor i korisnik kontroliše rad veliki deo vremena"
+  },
+  {
+    "section": "Unos teksta",
+    "question": "Koji su načini unosa teksta navedeni?",
+    "options": [
+      "Tastature, klavijature/telefonski tasteri, rukopis i govor",
+      "Samo miš",
+      "Samo skener",
+      "Samo VR kaciga"
+    ],
+    "answer": 0,
+    "hint": "Tastature, klavijature/telefonski tasteri, rukopis i govor"
+  },
+  {
+    "section": "Tastature",
+    "question": "Zašto QWERTY nije optimalan za unos teksta?",
+    "options": [
+      "Nastao je radi sprečavanja zaglavljivanja mehaničke pisaće mašine",
+      "Nastao je za maksimalnu brzinu modernog kucanja",
+      "Zato što nema slova",
+      "Zato što je samo za telefone"
+    ],
+    "answer": 0,
+    "hint": "Nastao je radi sprečavanja zaglavljivanja mehaničke pisaće mašine"
+  },
+  {
+    "section": "Tastature",
+    "question": "Šta je prednost DVORAK rasporeda?",
+    "options": [
+      "10–15% veća brzina i manje grešaka prema skripti",
+      "Sporije kucanje uz više grešaka",
+      "Potpuna standardizacija na svim računarima",
+      "Nema učenja"
+    ],
+    "answer": 0,
+    "hint": "10–15% veća brzina i manje grešaka prema skripti"
+  },
+  {
+    "section": "Tastature",
+    "question": "Zašto se DVORAK nije široko prihvatio?",
+    "options": [
+      "Velika baza QWERTY korisnika pruža otpor promeni",
+      "Nema slova",
+      "Radi samo na telefonima",
+      "Zabranjen je standardima"
+    ],
+    "answer": 0,
+    "hint": "Velika baza QWERTY korisnika pruža otpor promeni"
+  },
+  {
+    "section": "Specijalne tastature",
+    "question": "Zašto postoje specijalne tastature?",
+    "options": [
+      "Da smanje povrede i zamor, npr. RSI",
+      "Da povećaju broj grešaka",
+      "Da isključe početnike",
+      "Da zamene ekran"
+    ],
+    "answer": 0,
+    "hint": "Da smanje povrede i zamor, npr. RSI"
+  },
+  {
+    "section": "Akord tastature",
+    "question": "Šta je karakteristično za akord tastature?",
+    "options": [
+      "Mali broj tastera, slova su kombinacije, zahtevaju trening",
+      "Standardnih 101 taster",
+      "Samo miš bez tastera",
+      "Samo glasovni unos"
+    ],
+    "answer": 0,
+    "hint": "Mali broj tastera, slova su kombinacije, zahtevaju trening"
+  },
+  {
+    "section": "T9",
+    "question": "Kako radi T9 prediktivni unos?",
+    "options": [
+      "Koristi rečnik za pogađanje reči",
+      "Prepoznaje pokret oka",
+      "Meri pritisak na ekran",
+      "Štampa tekst laserski"
+    ],
+    "answer": 0,
+    "hint": "Koristi rečnik za pogađanje reči"
+  },
+  {
+    "section": "Prepoznavanje govora",
+    "question": "Kada je prepoznavanje govora najuspešnije?",
+    "options": [
+      "Kada je prilagođeno pojedincu i rečnik ograničen",
+      "Kada ima neograničen rečnik i mnogo buke",
+      "Kada nema treninga ni konteksta",
+      "Samo kada je tekst štampan"
+    ],
+    "answer": 0,
+    "hint": "Kada je prilagođeno pojedincu i rečnik ograničen"
+  },
+  {
+    "section": "Miš",
+    "question": "Koje su dve osnovne karakteristike miša?",
+    "options": [
+      "Kretanje u 2D prostoru i dugmad",
+      "Ekran i zvučnik",
+      "Memorija i CPU",
+      "Štampa i skeniranje"
+    ],
+    "answer": 0,
+    "hint": "Kretanje u 2D prostoru i dugmad"
+  },
+  {
+    "section": "Miš",
+    "question": "Zašto je miš indirektni uređaj?",
+    "options": [
+      "Korisnik pomera uređaj, a kursor se pomera na ekranu",
+      "Prst direktno dodiruje objekat na ekranu",
+      "Uređaj prikazuje sliku",
+      "Miš čuva podatke"
+    ],
+    "answer": 0,
+    "hint": "Korisnik pomera uređaj, a kursor se pomera na ekranu"
+  },
+  {
+    "section": "Miš",
+    "question": "Koja je prednost miša kao indirektnog uređaja?",
+    "options": [
+      "Ne zaklanja ekran, precizan je i brz",
+      "Uvek radi bez prostora na stolu",
+      "Nema koordinacije oko-ruka",
+      "Uvek je dobar za mokra okruženja"
+    ],
+    "answer": 0,
+    "hint": "Ne zaklanja ekran, precizan je i brz"
+  },
+  {
+    "section": "Miš",
+    "question": "Koji su metodi detekcije pokreta miša?",
+    "options": [
+      "Mehanički i optički",
+      "LCD i CRT",
+      "QWERTY i Dvorak",
+      "Ikonički i ehoički"
+    ],
+    "answer": 0,
+    "hint": "Mehanički i optički"
+  },
+  {
+    "section": "Tačped",
+    "question": "Šta je tačped?",
+    "options": [
+      "Mala površina osetljiva na dodir za upravljanje kursorom",
+      "Kugla u fiksnom kućištu",
+      "VR kaciga",
+      "Linijski štampač"
+    ],
+    "answer": 0,
+    "hint": "Mala površina osetljiva na dodir za upravljanje kursorom"
+  },
+  {
+    "section": "Tačped",
+    "question": "Zašto je važno podesiti ubrzanje tačpeda?",
+    "options": [
+      "Da omogući i brzo kretanje i precizno pozicioniranje",
+      "Da se smanji broj piksela ekrana",
+      "Da se izbegne svaki unos",
+      "Da zameni tastaturu"
+    ],
+    "answer": 0,
+    "hint": "Da omogući i brzo kretanje i precizno pozicioniranje"
+  },
+  {
+    "section": "Trakbal",
+    "question": "Šta je trakbal?",
+    "options": [
+      "Kugla u fiksiranom kućištu čija rotacija pomera kursor",
+      "Površina osetljiva na dodir",
+      "Direktni ekran",
+      "Tip štampača"
+    ],
+    "answer": 0,
+    "hint": "Kugla u fiksiranom kućištu čija rotacija pomera kursor"
+  },
+  {
+    "section": "Džojstik",
+    "question": "Kod džojstika pritisak na palicu najčešće određuje:",
+    "options": [
+      "Brzinu pokreta",
+      "Boju ekrana",
+      "Dubinu memorije",
+      "Tip fonta"
+    ],
+    "answer": 0,
+    "hint": "Brzinu pokreta"
+  },
+  {
+    "section": "Ekran na dodir",
+    "question": "Zašto je ekran osetljiv na dodir direktni uređaj?",
+    "options": [
+      "Korisnik direktno dodiruje elemente na ekranu",
+      "Koristi odvojeni kursor na stolu",
+      "Ne prikazuje sliku",
+      "Radi samo kroz glas"
+    ],
+    "answer": 0,
+    "hint": "Korisnik direktno dodiruje elemente na ekranu"
+  },
+  {
+    "section": "Ekran na dodir",
+    "question": "Koja je mana ekrana osetljivog na dodir?",
+    "options": [
+      "Prst prekriva ekran, neprecizan je za male regione i zamara ruku",
+      "Uvek zahteva poseban miš",
+      "Ne može služiti za meni",
+      "Ne radi u čistom okruženju"
+    ],
+    "answer": 0,
+    "hint": "Prst prekriva ekran, neprecizan je za male regione i zamara ruku"
+  },
+  {
+    "section": "Stylus",
+    "question": "Šta je stylus?",
+    "options": [
+      "Mali pokazivač nalik olovci za crtanje po ekranu/tabletu",
+      "Vrsta miša sa kuglom",
+      "Tip memorije",
+      "Vrsta LCD kristala"
+    ],
+    "answer": 0,
+    "hint": "Mali pokazivač nalik olovci za crtanje po ekranu/tabletu"
+  },
+  {
+    "section": "Praćenje oka",
+    "question": "Za šta se najčešće koristi praćenje pokreta oka?",
+    "options": [
+      "Za evaluaciju interfejsa i pomoć osobama sa ograničenim pokretom",
+      "Samo za štampanje",
+      "Samo za unos brojeva",
+      "Samo za T9"
+    ],
+    "answer": 0,
+    "hint": "Za evaluaciju interfejsa i pomoć osobama sa ograničenim pokretom"
+  },
+  {
+    "section": "Kursor tasteri",
+    "question": "Koji je najčešći raspored kursor tastera?",
+    "options": [
+      "Invertovano T",
+      "QWERTY",
+      "Krug",
+      "Nasumičan raspored"
+    ],
+    "answer": 0,
+    "hint": "Invertovano T"
+  },
+  {
+    "section": "Uređaji za prikaz",
+    "question": "Koje tri grupe uređaja za prikaz se navode?",
+    "options": [
+      "Bitmap ekrani, veliki ekrani i digitalni papir",
+      "Miš, tastatura i skener",
+      "RAM, disk i mreža",
+      "Slušalice, mikrofon i zvučnik"
+    ],
+    "answer": 0,
+    "hint": "Bitmap ekrani, veliki ekrani i digitalni papir"
+  },
+  {
+    "section": "Rezolucija",
+    "question": "Šta podrazumeva rezolucija ekrana?",
+    "options": [
+      "Broj piksela i gustinu piksela po inču",
+      "Samo boju kućišta",
+      "Samo veličinu tastature",
+      "Samo brzinu miša"
+    ],
+    "answer": 0,
+    "hint": "Broj piksela i gustinu piksela po inču"
+  },
+  {
+    "section": "Odnos stranica",
+    "question": "Šta je odnos stranica?",
+    "options": [
+      "Odnos širine i visine ekrana",
+      "Broj boja po pikselu",
+      "Broj tastera",
+      "Vreme reakcije"
+    ],
+    "answer": 0,
+    "hint": "Odnos širine i visine ekrana"
+  },
+  {
+    "section": "Dubina boja",
+    "question": "Šta označava dubina boja?",
+    "options": [
+      "Koliko različitih boja može imati svaki piksel",
+      "Koliko je ekran fizički dubok",
+      "Kolika je udaljenost korisnika",
+      "Koliko je štampa brza"
+    ],
+    "answer": 0,
+    "hint": "Koliko različitih boja može imati svaki piksel"
+  },
+  {
+    "section": "Anti-aliasing",
+    "question": "Šta radi anti-aliasing?",
+    "options": [
+      "Smekšava oštre ivice dodavanjem senke/među-tonova",
+      "Povećava broj tastera",
+      "Meri glasnost",
+      "Smanjuje memoriju korisnika"
+    ],
+    "answer": 0,
+    "hint": "Smekšava oštre ivice dodavanjem senke/među-tonova"
+  },
+  {
+    "section": "CRT",
+    "question": "Kako radi katodna cev?",
+    "options": [
+      "Snop elektrona pogađa ekran presvučen fosforom",
+      "Tečni kristal menja polarizaciju",
+      "Hemijska reakcija čuva prikaz",
+      "Dioda emituje zvuk"
+    ],
+    "answer": 0,
+    "hint": "Snop elektrona pogađa ekran presvučen fosforom"
+  },
+  {
+    "section": "LCD",
+    "question": "Koja je prednost LCD-a u odnosu na CRT prema skripti?",
+    "options": [
+      "Manji, lakši i nema zračenja",
+      "Uvek je veći i teži",
+      "Koristi bušene kartice",
+      "Ne može prikazati boje"
+    ],
+    "answer": 0,
+    "hint": "Manji, lakši i nema zračenja"
+  },
+  {
+    "section": "LCD",
+    "question": "Zašto LCD manje zamara oči prema skripti?",
+    "options": [
+      "Svetlost se reflektuje, ne emituje direktno",
+      "Zato što nema piksela",
+      "Zato što je uvek crno-bel",
+      "Zato što nema polarizaciju"
+    ],
+    "answer": 0,
+    "hint": "Svetlost se reflektuje, ne emituje direktno"
+  },
+  {
+    "section": "Digitalni papir",
+    "question": "Šta je karakteristično za digitalni papir?",
+    "options": [
+      "Tanak i fleksibilan, elektronski se ažurira i zadržava prikaz",
+      "Uvek je CRT monitor",
+      "Ne može zadržati prikaz",
+      "Služi samo za zvuk"
+    ],
+    "answer": 0,
+    "hint": "Tanak i fleksibilan, elektronski se ažurira i zadržava prikaz"
+  },
+  {
+    "section": "VR",
+    "question": "Šta znači šest stepeni slobode kod 3D miša?",
+    "options": [
+      "x, y, z + roll, pitch i yaw",
+      "Samo gore-dole-levo-desno",
+      "Šest boja",
+      "Šest tipova memorije"
+    ],
+    "answer": 0,
+    "hint": "x, y, z + roll, pitch i yaw"
+  },
+  {
+    "section": "VR",
+    "question": "Kako VR kacige stvaraju 3D efekat?",
+    "options": [
+      "Daju mali ekran za svako oko sa blago različitim uglom snimanja",
+      "Koriste samo jedan zvučnik",
+      "Koriste linijski štampač",
+      "Menjaju raspored tastature"
+    ],
+    "answer": 0,
+    "hint": "Daju mali ekran za svako oko sa blago različitim uglom snimanja"
+  },
+  {
+    "section": "VR morska bolest",
+    "question": "Šta može izazvati VR „morsku bolest“?",
+    "options": [
+      "Kašnjenje i konflikti pokreta glave/očiju i percepcije dubine",
+      "Prevelik broj tastera",
+      "Premalo boja u tastaturi",
+      "Upotreba upitnika"
+    ],
+    "answer": 0,
+    "hint": "Kašnjenje i konflikti pokreta glave/očiju i percepcije dubine"
+  },
+  {
+    "section": "Head-up display",
+    "question": "Šta je head-up display?",
+    "options": [
+      "Projekcija relevantnih podataka u vidnom polju",
+      "Vrsta tastature",
+      "Akord unos",
+      "Papirni upitnik"
+    ],
+    "answer": 0,
+    "hint": "Projekcija relevantnih podataka u vidnom polju"
+  },
+  {
+    "section": "Zvuk u interfejsu",
+    "question": "Za šta se koriste zvučni efekti?",
+    "options": [
+      "Obaveštavanje o grešci ili potvrda akcije",
+      "Merenje rezolucije",
+      "Zamena za sve vizuelne informacije",
+      "Smanjenje kapaciteta memorije"
+    ],
+    "answer": 0,
+    "hint": "Obaveštavanje o grešci ili potvrda akcije"
+  },
+  {
+    "section": "Haptika",
+    "question": "Šta omogućavaju haptički uređaji?",
+    "options": [
+      "Povratni osećaj dodira, vibracije ili otpora",
+      "Samo prikaz teksta",
+      "Samo štampanje",
+      "Samo unos brojeva"
+    ],
+    "answer": 0,
+    "hint": "Povratni osećaj dodira, vibracije ili otpora"
+  },
+  {
+    "section": "Bio-senzori",
+    "question": "Šta spada u bio-fiziološke senzore?",
+    "options": [
+      "Skener oka, temperatura, puls, disanje, GSR, treptaji",
+      "Samo QWERTY tasteri",
+      "Samo laser printer",
+      "Samo rezolucija monitora"
+    ],
+    "answer": 0,
+    "hint": "Skener oka, temperatura, puls, disanje, GSR, treptaji"
+  },
+  {
+    "section": "Štampa",
+    "question": "Koje su bitne karakteristike štampe?",
+    "options": [
+      "Rezolucija, brzina i cena",
+      "Samo boja kućišta",
+      "Samo broj tastera",
+      "Samo odnos stranica"
+    ],
+    "answer": 0,
+    "hint": "Rezolucija, brzina i cena"
+  },
+  {
+    "section": "Štampa",
+    "question": "U čemu se meri rezolucija štampača?",
+    "options": [
+      "Tačkama po inču (dpi)",
+      "Hercima",
+      "Milisekundama",
+      "Bitovima u sekundi"
+    ],
+    "answer": 0,
+    "hint": "Tačkama po inču (dpi)"
+  },
+  {
+    "section": "Štampa",
+    "question": "Koja tehnologija štampe koristi toner i zagrejavanje preko papira?",
+    "options": [
+      "Laserski printer",
+      "Matrični printer",
+      "Bubble-jet",
+      "Digitalni papir"
+    ],
+    "answer": 0,
+    "hint": "Laserski printer"
+  },
+  {
+    "section": "Heuristike",
+    "question": "Šta je heuristička evaluacija?",
+    "options": [
+      "Metoda za identifikovanje problema upotrebljivosti u UI dizajnu",
+      "Automatsko prepoznavanje govora",
+      "Tehnologija LCD ekrana",
+      "Vrsta memorije"
+    ],
+    "answer": 0,
+    "hint": "Metoda za identifikovanje problema upotrebljivosti u UI dizajnu"
+  },
+  {
+    "section": "Nielsen heuristike",
+    "question": "Ko su predložili 10 smernica za UI?",
+    "options": [
+      "Jacob Nielsen i Rolf Molich",
+      "Clayton Lewis i Cathleen Wharton",
+      "James i Lange",
+      "Fitts i Dvorak"
+    ],
+    "answer": 0,
+    "hint": "Jacob Nielsen i Rolf Molich"
+  },
+  {
+    "section": "Nielsen heuristike",
+    "question": "Šta su Nielsen heuristike?",
+    "options": [
+      "Opšti principi, ne specifična pravila upotrebljivosti",
+      "Precizne formule za svaki UI",
+      "Hardverski standard tastature",
+      "Metoda štampe"
+    ],
+    "answer": 0,
+    "hint": "Opšti principi, ne specifična pravila upotrebljivosti"
+  },
+  {
+    "section": "Nielsen heuristike",
+    "question": "Šta znači Visibility of system status?",
+    "options": [
+      "Sistem daje povratne informacije o tome šta se dešava u razumnom vremenu",
+      "Korisnik mora sve da pamti",
+      "Sistem treba da sakrije status",
+      "Samo administrator vidi status"
+    ],
+    "answer": 0,
+    "hint": "Sistem daje povratne informacije o tome šta se dešava u razumnom vremenu"
+  },
+  {
+    "section": "Nielsen heuristike",
+    "question": "Šta znači Match between system and real world?",
+    "options": [
+      "Dizajn govori jezikom korisnika i koristi njemu bliske koncepte",
+      "Dizajn koristi samo sistemske kodove",
+      "Dizajn menja značenje pojmova",
+      "Dizajn ignoriše realan svet"
+    ],
+    "answer": 0,
+    "hint": "Dizajn govori jezikom korisnika i koristi njemu bliske koncepte"
+  },
+  {
+    "section": "Nielsen heuristike",
+    "question": "Šta spada u User control and freedom?",
+    "options": [
+      "Undo, Redo, Exit i Cancel",
+      "Samo zaključan modal",
+      "Samo obavezno završavanje akcije",
+      "Samo skriven izlaz"
+    ],
+    "answer": 0,
+    "hint": "Undo, Redo, Exit i Cancel"
+  },
+  {
+    "section": "Nielsen heuristike",
+    "question": "Šta znači Consistency and standards?",
+    "options": [
+      "Korisnici ne treba da se pitaju da li različite reči/radnje znače isto; pratiti konvencije",
+      "Svaki ekran treba da ima drugačije značenje istih komandi",
+      "Standardi ne postoje",
+      "Konzistentnost važi samo za boju"
+    ],
+    "answer": 0,
+    "hint": "Korisnici ne treba da se pitaju da li različite reči/radnje znače isto; pratiti konvencije"
+  },
+  {
+    "section": "Nielsen heuristike",
+    "question": "Koje dve vrste grešaka se navode kod Error prevention?",
+    "options": [
+      "Promašaji (slips) i greške (mistakes)",
+      "CRT i LCD",
+      "Ikoničke i ehoičke",
+      "Formativne i sumarne"
+    ],
+    "answer": 0,
+    "hint": "Promašaji (slips) i greške (mistakes)"
+  },
+  {
+    "section": "Nielsen heuristike",
+    "question": "Šta znači Recognition rather than recall?",
+    "options": [
+      "Smanjiti količinu informacija koju korisnik mora da pamti",
+      "Naterati korisnika da pamti komande",
+      "Ukloniti vizuelne smernice",
+      "Sakrivati opcije"
+    ],
+    "answer": 0,
+    "hint": "Smanjiti količinu informacija koju korisnik mora da pamti"
+  },
+  {
+    "section": "Nielsen heuristike",
+    "question": "Šta znači Flexibility and efficiency of use?",
+    "options": [
+      "Prečice, personalizacija i prilagođavanje za efikasniji rad",
+      "Samo jedan način rada za sve",
+      "Uklanjanje prečica",
+      "Samo početnički režim"
+    ],
+    "answer": 0,
+    "hint": "Prečice, personalizacija i prilagođavanje za efikasniji rad"
+  },
+  {
+    "section": "Nielsen heuristike",
+    "question": "Šta znači Aesthetic and minimalist design?",
+    "options": [
+      "Ukloniti irelevantne informacije i smanjiti kognitivno opterećenje i vizuelni nered",
+      "Dodati što više elemenata",
+      "Sakrivati bitne elemente",
+      "Koristiti samo animacije"
+    ],
+    "answer": 0,
+    "hint": "Ukloniti irelevantne informacije i smanjiti kognitivno opterećenje i vizuelni nered"
+  },
+  {
+    "section": "Nielsen heuristike",
+    "question": "Šta znači Help users recognize, diagnose and recover from errors?",
+    "options": [
+      "Poruke o greškama jasno opisuju problem i moguće rešenje",
+      "Poruke krive korisnika",
+      "Prikazuju samo kod greške",
+      "Ne nude oporavak"
+    ],
+    "answer": 0,
+    "hint": "Poruke o greškama jasno opisuju problem i moguće rešenje"
+  },
+  {
+    "section": "Nielsen heuristike",
+    "question": "Šta važi za Help and documentation?",
+    "options": [
+      "Pomoć treba da bude lako dostupna i poželjno u trenutku potrebe",
+      "Pomoć treba sakriti",
+      "Pomoć je zamena za loš interfejs i jedini izvor znanja",
+      "Pomoć ne treba organizovati"
+    ],
+    "answer": 0,
+    "hint": "Pomoć treba da bude lako dostupna i poželjno u trenutku potrebe"
+  },
+  {
+    "section": "Cognitive Walkthrough V2",
+    "question": "Šta je kognitivni prolaz?",
+    "options": [
+      "Tehnika procene mogućnosti učenja sistema iz perspektive novog korisnika",
+      "Test brzine štampača",
+      "Vrsta VR interakcije",
+      "Automatsko logovanje"
+    ],
+    "answer": 0,
+    "hint": "Tehnika procene mogućnosti učenja sistema iz perspektive novog korisnika"
+  },
+  {
+    "section": "Cognitive Walkthrough V2",
+    "question": "Kada je nastao cognitive walkthrough?",
+    "options": [
+      "1990, Clayton Lewis",
+      "1994, James-Lange",
+      "1999, Dvorak",
+      "2021, Fitts"
+    ],
+    "answer": 0,
+    "hint": "1990, Clayton Lewis"
+  },
+  {
+    "section": "Cognitive Walkthrough V2",
+    "question": "Za šta je cognitive walkthrough prvobitno nastao?",
+    "options": [
+      "Testiranje kioska i ATM mašina",
+      "Testiranje VR kaciga",
+      "Testiranje štampača",
+      "Testiranje slušnog aparata"
+    ],
+    "answer": 0,
+    "hint": "Testiranje kioska i ATM mašina"
+  },
+  {
+    "section": "Cognitive Walkthrough V2",
+    "question": "Koja je ključna karakteristika CW-a?",
+    "options": [
+      "Ne uključuje korisnike i oslanja se na eksperte/evaluatore",
+      "Uvek uključuje 100 korisnika",
+      "Radi se samo posle produkcije",
+      "Nema unapred definisanih zadataka"
+    ],
+    "answer": 0,
+    "hint": "Ne uključuje korisnike i oslanja se na eksperte/evaluatore"
+  },
+  {
+    "section": "Cognitive Walkthrough V2",
+    "question": "Ko učestvuje u CW radionici?",
+    "options": [
+      "UX specijalisti, vlasnici proizvoda, inženjeri i domenski eksperti",
+      "Samo krajnji korisnici",
+      "Samo menadžment korisnika",
+      "Samo prodaja"
+    ],
+    "answer": 0,
+    "hint": "UX specijalisti, vlasnici proizvoda, inženjeri i domenski eksperti"
+  },
+  {
+    "section": "Cognitive Walkthrough V2",
+    "question": "Koja je uloga facilitatora u CW-u?",
+    "options": [
+      "Izvršava zadatak, zaustavlja se na koracima i vodi evaluaciju",
+      "Samo popunjava anketu kao korisnik",
+      "Samo piše kôd",
+      "Samo meri DPI"
+    ],
+    "answer": 0,
+    "hint": "Izvršava zadatak, zaustavlja se na koracima i vodi evaluaciju"
+  },
+  {
+    "section": "Cognitive Walkthrough V2",
+    "question": "Kada je korak neuspešan u naknadnoj analizi CW-a?",
+    "options": [
+      "Ako je odgovor makar na jedno od ključnih pitanja NE",
+      "Samo ako su sva pitanja NE",
+      "Nikad, koraci se ne ocenjuju",
+      "Samo ako korisnik padne test"
+    ],
+    "answer": 0,
+    "hint": "Ako je odgovor makar na jedno od ključnih pitanja NE"
+  },
+  {
+    "section": "Cognitive Walkthrough V2",
+    "question": "Za kakve interfejse je CW posebno pogodan?",
+    "options": [
+      "Nove, kompleksne i nepoznate interfejse",
+      "Opšte prihvaćene sisteme poput standardnih e-prodavnica",
+      "Samo štampače",
+      "Samo fizičke tastature"
+    ],
+    "answer": 0,
+    "hint": "Nove, kompleksne i nepoznate interfejse"
+  },
+  {
+    "section": "Cognitive Walkthrough V2",
+    "question": "Kada je najbolje koristiti CW?",
+    "options": [
+      "Tokom razvoja novog dizajna, naročito na prototipu",
+      "Samo godinama posle produkcije",
+      "Samo kada nema prototipa",
+      "Nikada sa drugim metodama"
+    ],
+    "answer": 0,
+    "hint": "Tokom razvoja novog dizajna, naročito na prototipu"
+  },
+  {
+    "section": "Thinking Aloud V3",
+    "question": "Šta TA metoda traži od korisnika?",
+    "options": [
+      "Da tokom korišćenja sistema naglas verbalizuje svoje misli",
+      "Da ćuti i samo klikće",
+      "Da piše kôd",
+      "Da ocenjuje bez zadataka"
+    ],
+    "answer": 0,
+    "hint": "Da tokom korišćenja sistema naglas verbalizuje svoje misli"
+  },
+  {
+    "section": "Thinking Aloud V3",
+    "question": "Koji je osnovni tok TA testiranja?",
+    "options": [
+      "Okupiti ciljnu grupu, dati pripremljene zadatke, slušati korisnike",
+      "Napraviti samo upitnik bez sistema",
+      "Pustiti produkciju bez testa",
+      "Samo pregledati kôd"
+    ],
+    "answer": 0,
+    "hint": "Okupiti ciljnu grupu, dati pripremljene zadatke, slušati korisnike"
+  },
+  {
+    "section": "Thinking Aloud V3",
+    "question": "Koja je prednost TA metodologije?",
+    "options": [
+      "Jeftina, robustna, fleksibilna, ubedljiva i lako se uči",
+      "Zahteva skupu laboratoriju uvek",
+      "Daje idealne statističke rezultate",
+      "Može se koristiti samo za jedan tip interfejsa"
+    ],
+    "answer": 0,
+    "hint": "Jeftina, robustna, fleksibilna, ubedljiva i lako se uči"
+  },
+  {
+    "section": "Thinking Aloud V3",
+    "question": "Koja je negativna strana TA metodologije?",
+    "options": [
+      "Rezultati nisu pogodni za statističke analize i situacija je neprirodna",
+      "Nikada ne otkriva probleme",
+      "Ne može se naučiti",
+      "Uvek zahteva VR opremu"
+    ],
+    "answer": 0,
+    "hint": "Rezultati nisu pogodni za statističke analize i situacija je neprirodna"
+  },
+  {
+    "section": "Thinking Aloud V3",
+    "question": "Šta facilitator treba da uradi ako ispitanik zastane?",
+    "options": [
+      "Postavi pitanje da podstakne verbalizaciju",
+      "Odmah prekine test bez objašnjenja",
+      "Kaže korisniku da greši",
+      "Sam završi zadatak"
+    ],
+    "answer": 0,
+    "hint": "Postavi pitanje da podstakne verbalizaciju"
+  },
+  {
+    "section": "Korisnički tokovi V4",
+    "question": "Šta su korisnički tokovi?",
+    "options": [
+      "Dijagrami putanje korisnika kroz proizvod radi završavanja zadatka",
+      "Lista hardverskih komponenti",
+      "Vrsta memorije",
+      "Metoda štampe"
+    ],
+    "answer": 0,
+    "hint": "Dijagrami putanje korisnika kroz proizvod radi završavanja zadatka"
+  },
+  {
+    "section": "Korisnički tokovi V4",
+    "question": "Na šta se fokusira tok korisnika?",
+    "options": [
+      "Na potrebe korisnika i najefikasniji način da ih zadovolji",
+      "Na unutrašnju strukturu servera",
+      "Samo na boje ekrana",
+      "Samo na cenu opreme"
+    ],
+    "answer": 0,
+    "hint": "Na potrebe korisnika i najefikasniji način da ih zadovolji"
+  },
+  {
+    "section": "Korisnički tokovi V4",
+    "question": "Koja je prednost korisničkih tokova?",
+    "options": [
+      "Jasnoća ekrana/stranica, rano otkrivanje problema i bolja timska komunikacija",
+      "Sakrivanje problema do kraja",
+      "Uklanjanje potrebe za dizajnom",
+      "Samo automatsko testiranje"
+    ],
+    "answer": 0,
+    "hint": "Jasnoća ekrana/stranica, rano otkrivanje problema i bolja timska komunikacija"
+  },
+  {
+    "section": "Korisnički tokovi V4",
+    "question": "Šta označava krug u korisničkim tokovima?",
+    "options": [
+      "Početni i krajnji čvor",
+      "Jednu stranicu ili ekran",
+      "Grananje",
+      "Kretanje unazad"
+    ],
+    "answer": 0,
+    "hint": "Početni i krajnji čvor"
+  },
+  {
+    "section": "Korisnički tokovi V4",
+    "question": "Šta označava pravougaonik u korisničkim tokovima?",
+    "options": [
+      "Jednu stranicu ili ekran",
+      "Početak/kraj",
+      "Grananje",
+      "Kretanje unazad"
+    ],
+    "answer": 0,
+    "hint": "Jednu stranicu ili ekran"
+  },
+  {
+    "section": "Korisnički tokovi V4",
+    "question": "Šta označava romb u korisničkim tokovima?",
+    "options": [
+      "Grananje prilikom korišćenja aplikacije",
+      "Početak i kraj",
+      "Običan ekran",
+      "Povratnu liniju"
+    ],
+    "answer": 0,
+    "hint": "Grananje prilikom korišćenja aplikacije"
+  },
+  {
+    "section": "Korisnički tokovi V4",
+    "question": "Šta označava puna linija u korisničkim tokovima?",
+    "options": [
+      "Povezivanje elemenata i kretanje korisnika unapred",
+      "Kretanje korisnika unazad",
+      "Početni čvor",
+      "Grananje"
+    ],
+    "answer": 0,
+    "hint": "Povezivanje elemenata i kretanje korisnika unapred"
+  },
+  {
+    "section": "Korisnički tokovi V4",
+    "question": "Šta označava isprekidana linija u korisničkim tokovima?",
+    "options": [
+      "Kretanje korisnika unazad",
+      "Početak i kraj",
+      "Jednu stranicu",
+      "Glavnu akciju unapred"
+    ],
+    "answer": 0,
+    "hint": "Kretanje korisnika unazad"
+  }
+];
+var questions=[]; var current=0; var score=0; var skipped=0; var checked=false; var answers=[];
+function el(id){return document.getElementById(id);}
+function shuffle(a){var i,j,t; for(i=a.length-1;i>0;i--){j=Math.floor(Math.random()*(i+1)); t=a[i]; a[i]=a[j]; a[j]=t;} return a;}
+function getSections(){var seen={}, out=[], i,s; for(i=0;i<QUESTIONS.length;i++){s=QUESTIONS[i].section; if(!seen[s]){seen[s]=true; out.push(s);}} return out.sort();}
+function addTopics(){var sel=el('topic'), sections=getSections(), i,o; for(i=0;i<sections.length;i++){o=document.createElement('option'); o.value=sections[i]; o.appendChild(document.createTextNode(sections[i])); sel.appendChild(o);}}
+function balanceOptionText(text,target,idx){ if(text.length>=Math.max(34,target*0.72)) return text; var add=[' kao glavni princip u ovoj oblasti',' bez dodatnih uslova',' u ovom kontekstu',' kao opšte pravilo',' uz zanemarivanje ostalog']; var out=text; var k=0; while(out.length<Math.min(target*0.9,78) && k<add.length){out=text+add[(idx+k)%add.length]; k++;} return out; }
+function prepare(q){var max=0,i,opts=[],txt,ci=0; for(i=0;i<q.options.length;i++){if(q.options[i].length>max)max=q.options[i].length;} for(i=0;i<q.options.length;i++){txt=max<42?q.options[i]:(i===q.answer?q.options[i]:balanceOptionText(q.options[i],max,i)); opts.push({text:txt, correct:i===q.answer});} shuffle(opts); for(i=0;i<opts.length;i++){if(opts[i].correct)ci=i;} return {section:q.section, question:q.question, shuffled:opts, correctIndex:ci};}
+function restartQuiz(){var topic=el('topic').value, base=[], i; for(i=0;i<QUESTIONS.length;i++){if(topic==='all'||QUESTIONS[i].section===topic) base.push(QUESTIONS[i]);} questions=[]; for(i=0;i<base.length;i++) questions.push(prepare(base[i])); shuffle(questions); current=0; score=0; skipped=0; checked=false; answers=[]; el('review').style.display='none'; el('totalPill').innerHTML='Pitanja: '+questions.length; el('scorePill').innerHTML='Tačno: 0'; el('modePill').innerHTML=topic==='all'?'Mod: sva pitanja':'Mod: '+topic; showQuestion();}
+function showQuestion(){var q=questions[current], box=el('options'), i,label,input,span; checked=false; if(!q){showFinal();return;} el('review').style.display='none'; el('qmeta').innerHTML='Pitanje '+(current+1)+' / '+questions.length; el('section').innerHTML=q.section; el('question').innerHTML=''; el('question').appendChild(document.createTextNode(q.question)); el('bar').style.width=Math.round((current/questions.length)*100)+'%'; el('feedback').className='feedback'; el('feedback').style.display='none'; el('hintBox').style.display='none'; el('hintBox').innerHTML=''; el('check').disabled=false; el('next').innerHTML=current===questions.length-1?'Završi':'Sledeće'; box.innerHTML=''; for(i=0;i<q.shuffled.length;i++){ label=document.createElement('label'); label.className='option'; input=document.createElement('input'); input.type='radio'; input.name='opt'; input.value=i; span=document.createElement('span'); span.appendChild(document.createTextNode(q.shuffled[i].text)); label.appendChild(input); label.appendChild(span); box.appendChild(label); } window.scrollTo(0,0);}
+function selected(){var r=document.getElementsByName('opt'), i; for(i=0;i<r.length;i++) if(r[i].checked) return parseInt(r[i].value,10); return null;}
+function checkAnswer(){if(checked)return; var q=questions[current], s=selected(), ok, opts, i; if(s===null){el('feedback').className='feedback bad'; el('feedback').innerHTML='Izaberi odgovor pre provere.'; el('feedback').style.display='block'; return;} checked=true; el('check').disabled=true; ok=s===q.correctIndex; if(ok)score++; answers.push({q:q.question, section:q.section, chosen:q.shuffled[s].text, correct:q.shuffled[q.correctIndex].text, ok:ok}); el('scorePill').innerHTML='Tačno: '+score; opts=document.getElementsByClassName('option'); for(i=0;i<opts.length;i++){if(i===q.correctIndex)opts[i].className+=' correct'; if(i===s && !ok)opts[i].className+=' wrong';} el('feedback').className='feedback '+(ok?'ok':'bad'); el('feedback').innerHTML=ok?'Tačno ✅':'Netačno ❌<br><b>Tačan odgovor:</b> '+q.shuffled[q.correctIndex].text; el('feedback').style.display='block';}
+function makeHint(q){var s=q.section; if(q.question.toLowerCase().indexOf('koliko')>=0) return 'Traži se brojčana vrednost ili opseg koji je naglašen u skripti.'; if(s.indexOf('Memorija')>=0) return 'Razlikuj senzorsku, kratkoročnu i dugoročnu memoriju.'; if(s.indexOf('Testiranje')>=0) return 'Razmisli da li je metoda ekspertska, korisnička ili etička.'; if(s.indexOf('Upotrebljivost')>=0) return 'Poveži odgovor sa učenjem, efikasnošću, greškama, pamćenjem ili zadovoljstvom.'; if(s.indexOf('Uređaji')>=0 || s.indexOf('Računar')>=0) return 'Obrati pažnju da li je uređaj direktan/indirektan, precizan, brz ili zamoran.'; return 'Seti se oblasti iznad pitanja i eliminiši opcije koje ne pripadaju tom pojmu.';}
+function showHint(){var q=questions[current]; el('hintBox').innerHTML='<b>Hint:</b> '+makeHint(q); el('hintBox').style.display='block';}
+function nextQuestion(){var q=questions[current]; if(!checked && q){answers.push({q:q.question, section:q.section, chosen:'Preskočeno', correct:q.shuffled[q.correctIndex].text, ok:false, skipped:true}); skipped++;} current++; if(current>=questions.length)showFinal(); else showQuestion();}
+function showFinal(){var pct=questions.length?Math.round(score/questions.length*100):0, list=el('reviewList'), i,a,d; el('bar').style.width='100%'; el('question').innerHTML='Kviz završen'; el('options').innerHTML=''; el('feedback').style.display='none'; el('hintBox').style.display='none'; el('check').disabled=true; el('review').style.display='block'; el('final').innerHTML='Osvojio/la si <b>'+score+'/'+questions.length+'</b> ('+pct+'%). Preskočeno: <b>'+skipped+'</b>.'; list.innerHTML=''; for(i=0;i<answers.length;i++){a=answers[i]; if(!a.ok){d=document.createElement('div'); d.className='reviewItem'; d.innerHTML='<div>'+a.section+'</div><b>'+a.q+'</b><br>'+(a.skipped?'Preskočeno':'Tvoj odgovor: '+a.chosen)+'<br>Tačno: '+a.correct; list.appendChild(d);}}}
+el('restart').onclick=restartQuiz; el('again').onclick=restartQuiz; el('topic').onchange=restartQuiz; el('check').onclick=checkAnswer; el('hintBtn').onclick=showHint; el('next').onclick=nextQuestion;
+addTopics(); restartQuiz();
+</script>
+</body>
+</html>
